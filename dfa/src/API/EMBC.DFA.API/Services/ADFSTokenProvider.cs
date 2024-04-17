@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using EMBC.Utilities.Caching;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using YamlDotNet.Core.Tokens;
 
 namespace EMBC.DFA.API.Services
 {
@@ -12,14 +17,29 @@ namespace EMBC.DFA.API.Services
     {
         private ADFSTokenProviderOptions options;
         private readonly IHttpClientFactory httpClientFactory;
+        private const int Buffer = 60;
+        private const string tokenkey = "oauth-token";
+        private readonly IMemoryCache mcache;
 
-        public ADFSTokenProvider(IHttpClientFactory httpClientFactory, IOptions<ADFSTokenProviderOptions> options)
+        public ADFSTokenProvider(IHttpClientFactory httpClientFactory, IOptions<ADFSTokenProviderOptions> options, IMemoryCache cache)
         {
             this.options = options.Value;
             this.httpClientFactory = httpClientFactory;
+            mcache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
         public async Task<string> AcquireToken()
+        {
+            Token token = mcache.Get<Token>(tokenkey);
+            if (token is null)
+            {
+                token = await RefreshToken();
+            }
+
+            return token.AccessToken;
+        }
+
+        private async Task<Token> RefreshToken()
         {
             using var httpClient = httpClientFactory.CreateClient("adfs_token");
 
@@ -50,19 +70,17 @@ namespace EMBC.DFA.API.Services
                 using var response = await httpClient.PostAsync(string.Empty, content);
                 var responseContent = await response.Content.ReadAsStringAsync();
                 // response should be in JSON format.
-                var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseContent);
-                if (result.ContainsKey("access_token"))
+                //var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseContent);
+                Token? token = await response.Content.ReadFromJsonAsync<Token>();
+                if (token is not null)
                 {
-                    string token = result["access_token"].GetString();
+                    var options = new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(token.ExpiresIn - Buffer) };
+                    mcache.Set(tokenkey, token, options);
                     return token;
-                }
-                else if (result.ContainsKey("error"))
-                {
-                    throw new Exception($"{result["error"].GetString()}: {result["error_description"].GetString()}");
                 }
                 else
                 {
-                    throw new Exception(responseContent);
+                    throw new Exception("Unable to get OauthToken from provider");
                 }
             }
             catch (Exception e)
