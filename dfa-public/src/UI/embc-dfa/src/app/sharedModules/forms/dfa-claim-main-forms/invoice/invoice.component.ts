@@ -112,14 +112,22 @@ export default class InvoiceComponent implements OnInit, OnDestroy {
   }
 
   numericOnly(event): boolean {
-    let patt = /^([0-9])$/;
-    let result = patt.test(event.key);
-    return result;
-  }
+    let patt = /^\d+(\.\d{1,2})?$/;
+    let text = event.target.value+event.key;
+     if(text.indexOf('.')<0)
+     {
+       text=text+'.0'
+     }else 
+     if(text.indexOf('.')==text.length-1)
+       {
+         text=text+'0'
+       }
+     
+     let result = patt.test(text);
+     return result;
+   }
 
   CalculateInvoice(event): void {
-    let patt = /^([0-9])$/;
-    let result = patt.test(event.key);
 
     var netInvoice = Number(this.invoiceForm.controls.netInvoiceBeingClaimed.value);
     var PST = Number(this.invoiceForm.controls.pst.value);
