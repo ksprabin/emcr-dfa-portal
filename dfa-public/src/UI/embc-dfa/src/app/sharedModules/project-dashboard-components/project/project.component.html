@@ -141,9 +141,9 @@
       <div style="padding-top: 16px; display: flex;" [hidden]="applItem.isHidden">
   
         <div class="col-md-2">
-          <span><b>Sile Location - </b></span>
+          <span><b>Site Location - </b></span>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 wrap-text">
           <span>{{applItem.siteLocation }}</span>
         </div>
         <div class="col-md-2">
@@ -159,7 +159,7 @@
           <span><b>EMCR Approved Amount -</b></span>
         </div>
         <div class="col-md-3">
-          <span id="spnCauseOfDamage">{{ applItem.emcrApprovedAmount}}</span>
+          <span id="spnCauseOfDamage">CA$&nbsp;{{ applItem.emcrApprovedAmount | number }}</span>
         </div>
         <div class="col-md-2">
           <span><b>18 Month Deadline -</b></span>
@@ -182,9 +182,9 @@
           <tr>
             <td *ngFor="let item of applItem.statusBar; let i=index" id="item{{i}}" [ngClass]="item.status != '' ? 'labelStyle' : 'labelEmptyWidth'">
               <!--<div *ngIf="item.status != '' && item.currentStep == false" [ngClass]=" i == 0 ? 'removeBorder' : 'lineConnector'"></div>-->
-              <div *ngIf="item.status != ''" [ngClass]="item.currentStep == false || item.status == 'Decision Made' ? 'alignStatus': (item.stage == '' ? 'alignStatus' : 'currentStatus')">
-                <span *ngIf="item.isCompleted == true && applItem.isErrorInStatus == false" class="material-icons" [ngStyle]="{'color': item.stage == 'Ineligible' || item.stage == 'Withdrwan' ? 'red' : 'rgb(21 178 89)'}">
-                  {{ item.stage == 'Ineligible' || item.stage == 'Withdrwan' ? 'cancel' : 'check_circle' }}
+              <div *ngIf="item.status != ''" [ngClass]="item.currentStep == false || item.status == 'Closed' ? 'alignStatus': (item.stage == '' ? 'alignStatus' : 'currentStatus')">
+                <span *ngIf="item.isCompleted == true && applItem.isErrorInStatus == false" class="material-icons" [ngStyle]="{'color': item.stage == 'Ineligible' || item.stage == 'Withdrawn' ? 'red' : 'rgb(21 178 89)'}">
+                  {{ item.stage == 'Ineligible' || item.stage == 'Withdrawn' ? 'cancel' : 'check_circle' }}
                 </span>
                 <span *ngIf="item.isCompleted == false && item.currentStep == true && applItem.isErrorInStatus == false && item.stage != ''">
                   {{item.stage}}

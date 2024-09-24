@@ -30,7 +30,12 @@ import { map } from 'rxjs';
 import { AuthConfigModule } from './auth/auth-config.module';
 import { BceidAuthInterceptor } from './core/interceptors/bceid-auth.interceptor'
 import { environment } from '../environments/environment';
-
+import { IConfig, provideEnvironmentNgxMask } from 'ngx-mask';
+const maskConfigFunction: () => Partial<IConfig> = () => {
+    return {
+      validation: false,
+    };
+  };
 @NgModule({ declarations: [AppComponent, OutageBannerComponent, OutageDialogComponent],
     exports: [
         MatIconModule,
@@ -51,7 +56,7 @@ import { environment } from '../environments/environment';
         ButtonsModule,
         MatIconModule,
         MatAutocompleteModule,
-        AuthConfigModule], providers: [
+        AuthConfigModule], providers: [ provideEnvironmentNgxMask(maskConfigFunction),
         {
             provide: APP_BASE_HREF,
             useFactory: (s: PlatformLocation) => {

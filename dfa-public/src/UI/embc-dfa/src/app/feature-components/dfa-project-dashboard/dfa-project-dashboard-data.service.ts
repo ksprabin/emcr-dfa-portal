@@ -90,8 +90,13 @@ export class DFAProjectDataService {
   public setViewOrEdit(vieworedit: string): void {
     this._vieworedit = vieworedit;
     this.changeViewOrEdit.emit(vieworedit);
+    this.cacheService.set('vieworedit', vieworedit);
   }
   public getViewOrEdit(): string {
+    if (this._vieworedit === null || this._vieworedit === undefined) {
+      this._vieworedit = this.cacheService.get('vieworedit');
+    }
+
     return this._vieworedit;
   }
 

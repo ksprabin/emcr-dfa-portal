@@ -18,9 +18,9 @@ export class Invoice {
   purposeOfGoodsServiceReceived?: null | string;
   isClaimforPartofTotalInvoice?: null | boolean;
   reasonClaimingPartofTotalInvoice?: null | string;
-  netInvoiceBeingClaimed?: null | string;
-  pst?: null | string;
-  grossGST?: null | string;
+  netInvoiceBeingClaimed?: null | number;
+  pst?: null | number;
+  grossGST?: null | number;
   actualInvoiceTotal?: null | string;
   eligibleGST?: null | string;
   totalBeingClaimed?: null | string;

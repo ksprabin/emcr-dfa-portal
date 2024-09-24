@@ -360,7 +360,8 @@ export default class RecoveryClaimComponent implements OnInit, OnDestroy {
     MatSelectModule,
     MatTooltipModule
   ],
-  declarations: [RecoveryClaimComponent]
+  declarations: [RecoveryClaimComponent],
+  providers: [provideNgxMask()]
 })
 class PropertyDamageModule {}
 

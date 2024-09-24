@@ -52,7 +52,7 @@ export class DFAProjectComponent
   causeOfDamage = '';
   dateOfDamageFrom = '';
   dateOfDamageTo = '';
-
+  OneDayAgo: number = 0;
 
   constructor(
     private router: Router,
@@ -67,7 +67,7 @@ export class DFAProjectComponent
     private applicationService: ApplicationService,
     private dfaProjectMainService: DFAProjectMainService,
   ) {
-    
+    this.OneDayAgo = new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 1)).getTime()
 
   }
 
@@ -169,8 +169,8 @@ export class DFAProjectComponent
       if (
         (x.status.toLowerCase() === "decision made"
           || x.status.toLowerCase() === "closed: inactive" || x.status.toLowerCase() === "closed: withdrawn")
-        //&&
-        //(x.dateFileClosed && (this.sixtyOneDaysAgo <= new Date(x.dateFileClosed).getTime()))
+        &&
+        (x.dateFileClosed && (this.OneDayAgo >= new Date(x.dateFileClosed).getTime()))
       ) {
         this.closedProjectsCount++;
       } else this.currentProjectsCount++;
@@ -222,7 +222,7 @@ export class DFAProjectComponent
 
   BackToDashboard() {
     this.dfaApplicationMainDataService.setApplicationId(null);
-    this.router.navigate(['/verified-registration/dashboard']);
+    this.router.navigate(['/dfa-dashboard/current']);
   }
 
   ngAfterViewChecked(): void {

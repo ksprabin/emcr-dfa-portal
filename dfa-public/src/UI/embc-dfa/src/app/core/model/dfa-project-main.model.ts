@@ -25,7 +25,7 @@ export class RecoveryPlan {
   repairWorkDetails?: null | string;
   repairDamagedInfrastructure?: null | string;
   estimatedCompletionDate?: null | string;
-  estimateCostIncludingTax?: null | string;
+  estimateCostIncludingTax?: null | number;
 
   constructor(
     sitelocationdamageFromDate?: null | string,
@@ -43,7 +43,7 @@ export class RecoveryPlan {
     repairWorkDetails?: null | string,
     repairDamagedInfrastructure?: null | string,
     estimatedCompletionDate?: null | string,
-    estimateCostIncludingTax?: null | string
+    estimateCostIncludingTax?: null | number
   ) { }
 }
 

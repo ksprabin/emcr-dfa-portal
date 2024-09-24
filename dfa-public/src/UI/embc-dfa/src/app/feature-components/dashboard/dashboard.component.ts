@@ -140,7 +140,7 @@ export class DashboardComponent implements OnInit {
     this.currentApplicationsCount = 0; this.pastApplicationsCount = 0;
     lstApplications.forEach(x => {
       if (
-        (x.status.toLowerCase() === "dfa decision made"
+        (x.status.toLowerCase() === "decision made"
         || x.status.toLowerCase() === "closed" || x.status.toLowerCase() === "closed: withdrawn")
         &&
         (x.dateFileClosed && (this.OneDayAgo >= new Date(x.dateFileClosed).getTime()))

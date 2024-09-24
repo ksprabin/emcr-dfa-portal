@@ -392,7 +392,8 @@ export default class RecoveryPlanComponent implements OnInit, OnDestroy {
     MatSelectModule,
     MatTooltipModule
   ],
-  declarations: [RecoveryPlanComponent]
+  declarations: [RecoveryPlanComponent],
+  providers: [provideNgxMask()]
 })
 class PropertyDamageModule {}
 

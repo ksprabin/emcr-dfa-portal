@@ -158,7 +158,7 @@ export class DfaApplicationComponent implements OnInit {
     //dfa decision made
     this.lstApplications.forEach(x => {
       if (
-        (x.status.toLowerCase() === "dfa decision made"
+        (x.status.toLowerCase() === "decision made"
           || x.status.toLowerCase() === "closed" || x.status.toLowerCase() === "closed: withdrawn")
         &&
         (x.dateFileClosed && (this.OneDayAgo >= new Date(x.dateFileClosed).getTime()))

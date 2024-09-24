@@ -52,13 +52,13 @@ export class DfaDashClaimComponent implements OnInit {
   current = 1;
   appId = null;
   public apptype: string;
-  private sixtyOneDaysAgo: number;
   public isLoading: boolean = true;
   public color: string = "'#169BD5";
   public searchTextInput: string = '';
   public stageSelected: string = '';
   public sortfieldSelected: string = '';
   public filterbydaysSelected: number;
+  OneDayAgo: number = 0;
 
   constructor(
     private profileDataService: ProfileDataService,
@@ -75,7 +75,7 @@ export class DfaDashClaimComponent implements OnInit {
   ) {
     const navigation = this.router.getCurrentNavigation();
     this.apptype = this.route.snapshot.data["apptype"];
-    this.sixtyOneDaysAgo = new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 61)).getTime()
+    this.OneDayAgo = new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 1)).getTime()
   }
 
   ngOnInit(): void {
@@ -110,7 +110,7 @@ export class DfaDashClaimComponent implements OnInit {
 
                 objApp.statusColor = objStatItem.statusColor;
 
-                if (objApp.stage == 'Ineligible' || objApp.stage == 'Withdrwan') {
+                if (objApp.stage == 'Ineligible' || objApp.stage == 'Withdrawn') {
                   objApp.statusColor = '#E25E63';
                 }
 
@@ -172,14 +172,16 @@ export class DfaDashClaimComponent implements OnInit {
     this.lstClaims = res;
     //dfa decision made
     this.lstClaims.forEach(x => {
-      //if (
-      //  (x.status.toLowerCase() === "decision made"
-      //    || x.status.toLowerCase() === "closed: inactive" || x.status.toLowerCase() === "closed: withdrawn")
-      //  )
-      //{
-      //    x.openProject = false;
-      //} else x.openProject = true;
-      x.openClaim = true;
+      if (
+        (x.status.toLowerCase() === "decision made"
+          || x.status.toLowerCase() === "closed" || x.status.toLowerCase() === "closed: withdrawn")
+        &&
+        (x.dateFileClosed && (this.OneDayAgo >= new Date(x.dateFileClosed).getTime()))
+        )
+      {
+        x.openClaim = false;
+      } else x.openClaim = true;
+      //x.openClaim = true;
     })
     
     if (this.apptype === "open") {

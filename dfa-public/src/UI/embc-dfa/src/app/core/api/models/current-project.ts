@@ -4,6 +4,7 @@ import { ProjectStatusBar } from './project-status-bar';
 export interface CurrentProject {
   applicationId?: string;
   createdDate?: string;
+  dateFileClosed?: string;
   deadline18Month?: string;
   emcrApprovedAmount?: string;
   estimatedCompletionDate?: string;

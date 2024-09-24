@@ -515,7 +515,7 @@ namespace EMBC.DFA.API.Controllers
         public string? repairWorkDetails { get; set; }
         public string? repairDamagedInfrastructure { get; set; }
         public string? estimatedCompletionDate { get; set; }
-        public string? estimateCostIncludingTax { get; set; }
+        public decimal? estimateCostIncludingTax { get; set; }
         public ProjectStageOptionSet? projectStatus { get; set; }
     }
 
@@ -565,9 +565,9 @@ namespace EMBC.DFA.API.Controllers
         public string? PurposeOfGoodsServiceReceived { get; set; }
         public bool? IsClaimforPartofTotalInvoice { get; set; }
         public string? ReasonClaimingPartofTotalInvoice { get; set; }
-        public string? NetInvoiceBeingClaimed { get; set; }
-        public string? PST { get; set; }
-        public string? GrossGST { get; set; }
+        public decimal? NetInvoiceBeingClaimed { get; set; }
+        public decimal? PST { get; set; }
+        public decimal? GrossGST { get; set; }
         public string? EligibleGST { get; set; }
         public string? ActualInvoiceTotal { get; set; }
         public string? TotalBeingClaimed { get; set; }

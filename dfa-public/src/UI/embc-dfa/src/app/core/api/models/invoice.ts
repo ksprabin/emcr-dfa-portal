@@ -8,13 +8,13 @@ export interface Invoice {
   emcrDecisionComments?: null | string;
   emcrDecisionDate?: null | string;
   goodsReceivedDate?: null | string;
-  grossGST?: null | string;
+  grossGST?: null | number;
   invoiceDate?: null | string;
   invoiceNumber?: null | string;
   isClaimforPartofTotalInvoice?: null | boolean;
   isGoodsReceivedonInvoiceDate?: null | boolean;
-  netInvoiceBeingClaimed?: null | string;
-  pst?: null | string;
+  netInvoiceBeingClaimed?: null | number;
+  pst?: null | number;
   purposeOfGoodsServiceReceived?: null | string;
   reasonClaimingPartofTotalInvoice?: null | string;
   totalBeingClaimed?: null | string;

@@ -38,6 +38,10 @@
   box-shadow: 0 0 3px #003366;
 }
 
+::ng-deep .mdc-data-table__cell {
+  overflow-wrap: anywhere
+}
+
 .add-invoice-button-parent {
   display: flex;
   justify-content: flex-end;

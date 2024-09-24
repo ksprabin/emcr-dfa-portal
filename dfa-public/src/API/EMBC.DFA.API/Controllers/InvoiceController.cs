@@ -76,7 +76,16 @@ namespace EMBC.DFA.API.Controllers
         {
             if (invoice == null) return BadRequest("Invoice details cannot be empty.");
             var dfa_appcontact = await handler.HandleGetUser(currentUserId);
-            var mappedInvoice = mapper.Map<dfa_invoice_params>(invoice);
+            dfa_invoice_params mappedInvoice = null;
+
+            try
+            {
+                mappedInvoice = mapper.Map<dfa_invoice_params>(invoice);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex);
+            }
             var result = await handler.HandleInvoiceCreateUpdate(mappedInvoice);
 
             return Ok(result);

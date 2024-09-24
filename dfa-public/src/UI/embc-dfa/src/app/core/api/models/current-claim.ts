@@ -9,6 +9,7 @@ export interface CurrentClaim {
   claimNumber?: string;
   claimTotal?: string;
   createdDate?: string;
+  dateFileClosed?: string;
   eligiblePayable?: string;
   finalClaim?: boolean;
   firstClaim?: boolean;

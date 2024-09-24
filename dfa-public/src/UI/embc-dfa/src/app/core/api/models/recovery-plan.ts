@@ -6,7 +6,7 @@ export interface RecoveryPlan {
   describeDamageDetails?: null | string;
   describeDamagedInfrastructure?: null | string;
   differentDamageDatesReason?: null | string;
-  estimateCostIncludingTax?: null | string;
+  estimateCostIncludingTax?: null | number;
   estimatedCompletionDate?: null | string;
   infraDamageDetails?: null | string;
   isdamagedDateSameAsApplication?: null | boolean;

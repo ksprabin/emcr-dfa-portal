@@ -1,13 +1,13 @@
 /* tslint:disable */
 /* eslint-disable */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { BaseService } from '../base-service';
 import { ApiConfiguration } from '../api-configuration';
 import { StrictHttpResponse } from '../strict-http-response';
 import { RequestBuilder } from '../request-builder';
-import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { map, filter, catchError } from 'rxjs/operators';
 
 import { CurrentProject } from '../models/current-project';
 import { DfaProjectMain } from '../models/dfa-project-main';
@@ -121,9 +121,21 @@ export class ProjectService extends BaseService {
       map((r: HttpResponse<any>) => {
         return r as StrictHttpResponse<string>;
       })
-    );
+      ,catchError(this.handleError));
   }
-
+   handleError(error: HttpErrorResponse) {
+    if (error.status === 0) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong.
+      console.error(
+        `Backend returned code ${error.status}, body was: `, error.error);
+    }
+    // Return an observable with a user-facing error message.
+    return throwError(() => new Error('Something bad happened; please try again later.'));
+  }
   /**
    * create or update project.
    *

@@ -454,9 +454,10 @@ export default class InvoiceComponent implements OnInit, OnDestroy {
     // 2024-07-31 EMCRI-216 waynezen; upgrade to Angular 18 - new text mask provider
     NgxMaskDirective, NgxMaskPipe,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
-  declarations: [InvoiceComponent]
+  declarations: [InvoiceComponent],
+  providers: [provideNgxMask()]
 })
 class InvoiceModule {}
 

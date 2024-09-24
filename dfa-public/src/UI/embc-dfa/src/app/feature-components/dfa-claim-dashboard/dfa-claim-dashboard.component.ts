@@ -18,7 +18,7 @@ import { FormCreationService } from '../../core/services/formCreation.service';
 import { AlertService } from 'src/app/core/services/alert.service';
 //import { DFAProjectService } from './dfa-project.service';
 import { ApplicantOption, CurrentApplication, FarmOption, SmallBusinessOption } from 'src/app/core/api/models';
-import { ApplicationService, AttachmentService } from 'src/app/core/api/services';
+import { ApplicationService, AttachmentService, ClaimService } from 'src/app/core/api/services';
 import { MatDialog } from '@angular/material/dialog';
 import { DFAConfirmSubmitDialogComponent } from 'src/app/core/components/dialog-components/dfa-confirm-submit-dialog/dfa-confirm-submit-dialog.component';
 import { SecondaryApplicant } from 'src/app/core/model/dfa-application-main.model';
@@ -45,8 +45,8 @@ export class DFAClaimComponent
   implements OnInit, AfterViewInit, AfterViewChecked
 {
   tabs: DashTabModel[];
-  currentProjectsCount = 0;
-  closedProjectsCount = 0;
+  openClaimsCount = 0;
+  closedClaimsCount = 0;
   isLoading = false;
   applicationNumber = '';
   appId = null;
@@ -56,7 +56,7 @@ export class DFAClaimComponent
   dateOfDamageFrom = '';
   dateOfDamageTo = '';
   eligibleGST = false;
-
+  OneDayAgo: number = 0;
   projNumber = '';
   projName = '';
   siteLocation = '';
@@ -79,9 +79,10 @@ export class DFAClaimComponent
     private appSessionService: AppSessionService,
     private projService: ProjectService,
     private applicationService: ApplicationService,
+    private claimService: ClaimService,
   ) {
     
-
+    this.OneDayAgo = new Date(new Date().getTime() - (1000 * 60 * 60 * 24 * 1)).getTime()
   }
 
   ngOnInit(): void {
@@ -94,41 +95,41 @@ export class DFAClaimComponent
     this.dfaProjectMainDataService.setApplicationId(this.appId);
     this.dfaProjectMainDataService.setProjectId(this.projId);
 
-    this.appSessionService.currentProjectsCount.subscribe((n: number) => {
-      this.currentProjectsCount = n;
+    this.appSessionService.openClaimsCount.subscribe((n: number) => {
+      this.openClaimsCount = n;
       this.tabs[0].count = n ? n.toString() : "0";
     });
-    //this.appSessionService.currentProjectsCount.subscribe((n: number) => {
-    //  this.closedProjectsCount = n;
-    //  this.tabs[2].count = n ? n.toString() : "0";
-    //});
+    this.appSessionService.closedClaimsCount.subscribe((n: number) => {
+      this.closedClaimsCount = n;
+      this.tabs[1].count = n ? n.toString() : "0";
+    });
 
-    //this.projService.projectGetDfaProjects({ applicationId: this.appId }).subscribe({
-    //  next: (lstData) => {
-    //    if (lstData != null) {
-    //      //this.countAppData(lstData);
-    //      //this.tabs[0].count = this.currentProjectsCount.toString();
-    //      //this.tabs[1].count = this.closedProjectsCount.toString();
-    //    }
-    //  },
-    //  error: (error) => {
-    //  }
-    //});
-
+    this.claimService.claimGetDfaClaims({ projectId: this.projId }).subscribe({
+      next: (lstData) => {
+        if (lstData != null) {
+          this.countAppData(lstData);
+          this.tabs[0].count = this.openClaimsCount.toString();
+          this.tabs[1].count = this.closedClaimsCount.toString();
+        }
+      },
+      error: (error) => {
+      }
+    });
+    
     this.tabs = [
       {
         label: 'Open Claims',
         route: 'open',
         activeImage: '/assets/images/past-evac-active.svg',
         inactiveImage: '/assets/images/past-evac.svg',
-        count: this.currentProjectsCount.toString()
+        count: this.openClaimsCount.toString()
       },
       {
         label: 'Closed Claims',
         route: 'close',
         activeImage: '/assets/images/past-evac-active.svg',
         inactiveImage: '/assets/images/past-evac.svg',
-        count: this.closedProjectsCount.toString()
+        count: this.closedClaimsCount.toString()
       }
     ];
 
@@ -192,16 +193,16 @@ export class DFAClaimComponent
   countAppData(lstApp: Object): void {
     var res = JSON.parse(JSON.stringify(lstApp));
     let lstProjects = res;
-    this.currentProjectsCount = 0; this.closedProjectsCount = 0;
+    this.openClaimsCount = 0; this.closedClaimsCount = 0;
     lstProjects.forEach(x => {
       if (
         (x.status.toLowerCase() === "decision made"
-          || x.status.toLowerCase() === "closed: inactive" || x.status.toLowerCase() === "closed: withdrawn")
-        //&&
-        //(x.dateFileClosed && (this.sixtyOneDaysAgo <= new Date(x.dateFileClosed).getTime()))
+          || x.status.toLowerCase() === "closed" || x.status.toLowerCase() === "closed: withdrawn")
+        &&
+        (x.dateFileClosed && (this.OneDayAgo >= new Date(x.dateFileClosed).getTime()))
       ) {
-        this.closedProjectsCount++;
-      } else this.currentProjectsCount++;
+        this.closedClaimsCount++;
+      } else this.openClaimsCount++;
     })
   }
 
