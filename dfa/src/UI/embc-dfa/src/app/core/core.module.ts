@@ -43,6 +43,7 @@ import { SecondaryApplicantWarningDialogComponent } from './components/dialog-co
 
 @NgModule({
   imports: [
+    AlertComponent,
     CommonModule,
     FormsModule,
     MatCardModule,
@@ -63,7 +64,6 @@ import { SecondaryApplicantWarningDialogComponent } from './components/dialog-co
   ],
   declarations: [
     AppLoaderComponent,
-    AlertComponent,
     HeaderComponent,
     FooterComponent,
     DialogComponent,

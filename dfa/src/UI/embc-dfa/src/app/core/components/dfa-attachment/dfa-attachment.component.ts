@@ -88,8 +88,8 @@ export class DfaAttachmentComponent implements OnInit, OnDestroy {
   saveAttachment(): void {
     if (this.fileUpload.status === 'VALID') {
       this.saveFileUpload.emit(this.fileUpload.value);
-      this.showFileUpload = false;
-      this.initFileUploadForm();
+      
+      //this.initFileUploadForm();
     } else {
       console.error(this.fileUpload);
       this.fileUpload.markAllAsTouched();

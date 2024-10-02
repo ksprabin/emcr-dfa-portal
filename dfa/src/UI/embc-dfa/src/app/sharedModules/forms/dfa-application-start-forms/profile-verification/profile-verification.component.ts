@@ -24,9 +24,10 @@ import { DFAApplicationStartDataService } from 'src/app/feature-components/dfa-a
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
-import { TextMaskModule } from 'angular2-text-mask';
+
 import { AddressFormsModule } from '../../address-forms/address-forms.module';
 import { ErrorStateMatcher } from '@angular/material/core';
+import { IMaskModule } from 'angular-imask';
 
 export class CustomErrorMailMatcher implements ErrorStateMatcher {
   isErrorState(
@@ -56,20 +57,7 @@ export default class ProfileVerificationComponent implements OnInit, OnDestroy {
   profileVerificationForm$: Subscription;
   formCreationService: FormCreationService;
   radioOption: string[] = ['Yes', 'No'];
-  readonly phoneMask = [
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/
-  ];
+  readonly phoneMask = "000-000-0000";
   emailMatcher = new CustomErrorMailMatcher();
 
   constructor(
@@ -344,7 +332,7 @@ export default class ProfileVerificationComponent implements OnInit, OnDestroy {
     FormsModule,
     MatCardModule,
     MatFormFieldModule,
-    TextMaskModule,
+    IMaskModule,
     MatRadioModule,
     MatInputModule,
     MatButtonModule,

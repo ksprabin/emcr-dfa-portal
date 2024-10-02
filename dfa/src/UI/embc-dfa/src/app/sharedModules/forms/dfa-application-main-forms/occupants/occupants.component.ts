@@ -17,7 +17,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { TextMaskModule } from 'angular2-text-mask';
+
 import { CustomPipeModule } from 'src/app/core/pipe/customPipe.module';
 import { ApplicantOption, SecondaryApplicantTypeOption } from 'src/app/core/api/models';
 import { MatSelectModule } from '@angular/material/select';
@@ -26,6 +26,8 @@ import { FullTimeOccupantService, OtherContactService, SecondaryApplicantService
 import { DFADeleteConfirmDialogComponent } from 'src/app/core/components/dialog-components/dfa-confirm-delete-dialog/dfa-confirm-delete.component';
 import { MatDialog } from '@angular/material/dialog';
 import { SecondaryApplicantWarningDialogComponent } from '../../../../core/components/dialog-components/secondary-applicant-warning-dialog/secondary-applicant-warning-dialog.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { IMaskModule } from 'angular-imask';
 
 @Component({
   selector: 'app-occupants',
@@ -59,26 +61,20 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
   secondaryApplicantsDataSource = new BehaviorSubject([]);
   secondaryApplicantsData = [];
   vieworedit: string = "";
+  contactonly: string = "";
   public ApplicantOptions = ApplicantOption;
   isHomeowner: boolean = false;
   isResidentialTenant: boolean = false;
   isSmallBusinessOwner: boolean = false;
   isCharitableOrganization: boolean = false;
   isFarmOwner: boolean = false;
-  readonly phoneMask = [
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/
-  ];
+  onlyOccupantInHome: boolean = false;
+  disableOnlyOccupant: boolean = false;
+  hideOccupantButton: boolean = false;
+  onlyOtherContact: boolean = false;
+  disableOnlyOtherContact: boolean = false;
+  hideOtherContactButton: boolean = false;
+  readonly phoneMask = "000-000-0000";
 
   constructor(
     @Inject('formBuilder') formBuilder: UntypedFormBuilder,
@@ -94,10 +90,12 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
     this.formCreationService = formCreationService;
 
     this.vieworedit = this.dfaApplicationMainDataService.getViewOrEdit();
+    this.contactonly = this.dfaApplicationMainDataService.getContactOnlyView();
 
     this.dfaApplicationMainDataService.changeViewOrEdit.subscribe((vieworedit) => {
       this.vieworedit = vieworedit;
     })
+    
   }
 
   ngOnInit(): void {
@@ -114,10 +112,41 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
             this.isCharitableOrganization = (application.appTypeInsurance.applicantOption == Object.keys(this.ApplicantOptions)[Object.values(this.ApplicantOptions).indexOf(this.ApplicantOptions.CharitableOrganization)]);
             if (this.isHomeowner || this.isResidentialTenant) this.fullTimeOccupantsForm.get('fullTimeOccupants').setValidators([Validators.required]);
             else this.fullTimeOccupantsForm.get('fullTimeOccupants').setValidators(null);
+
+            this.onlyOccupantInHome = this.dfaApplicationMainDataService.getIsOnlyOccupantInHome();
+            this.onlyOtherContact = this.dfaApplicationMainDataService.getIsOnlyOtherContact();
+            
+            setTimeout(
+              function () {
+                this.onlyOccupantInHome = this.dfaApplicationMainDataService.getIsOnlyOccupantInHome();
+                this.onlyOtherContact = this.dfaApplicationMainDataService.getIsOnlyOtherContact();
+                this.hideOccupantButton = this.onlyOccupantInHome;
+                this.hideOtherContactButton = this.onlyOtherContact;
+
+                if (this.isHomeowner || this.isResidentialTenant)
+                  this.fullTimeOccupantsForm.get('onlyOccupantInHome').setValue(this.onlyOccupantInHome);
+
+                this.otherContactsForm.get('onlyOtherContact').setValue(this.onlyOtherContact);
+
+                if (this.isHomeowner || this.isResidentialTenant) {
+                  this.updateFullTimeOccupantOnlyOccupantInHome(this.onlyOccupantInHome);
+                }
+
+                this.updateOnlyOtherContact(this.onlyOtherContact);
+              }.bind(this),
+              1000
+            );
+            
           }
           });
       });
-
+      
+    this.fullTimeOccupantsForm
+      .get('onlyOccupantInHome')
+      .valueChanges.subscribe((value) =>
+        this.updateFullTimeOccupantOnlyOccupantInHome(value)
+    );
+    
     this.fullTimeOccupantsForm
       .get('addNewFullTimeOccupantIndicator')
       .valueChanges.subscribe((value) => this.updateFullTimeOccupantOnVisibility());
@@ -128,6 +157,12 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
       .subscribe((otherContacts) => {
         this.otherContactsForm = otherContacts;
       });
+
+    this.otherContactsForm
+      .get('onlyOtherContact')
+      .valueChanges.subscribe((value) =>
+        this.updateOnlyOtherContact(value)
+      );
 
     this.otherContactsForm
       .get('addNewOtherContactIndicator')
@@ -149,12 +184,39 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
       || this.vieworedit === 'edit'
       || this.vieworedit === 'viewOnly') {
         this.secondaryApplicantsForm.disable();
-        this.fullTimeOccupantsForm.disable();
+      this.fullTimeOccupantsForm.disable();
+      this.disableOnlyOccupant = true;
+      //this.disableOnlyOtherContact = true;
       }
 
     if (this.dfaApplicationMainDataService.getViewOrEdit() == 'viewOnly') {
       this.secondaryApplicantsForm.disable();
     }
+
+    this.fullTimeOccupantsForm.get('onlyOccupantInHome').setValue(this.onlyOccupantInHome);
+    this.otherContactsForm.get('onlyOtherContact').setValue(this.onlyOtherContact);
+  }
+  
+  onChecked(e) {
+    if (e.checked) {
+      this.hideOccupantButton = true;
+      this.fullTimeOccupantsForm.get('onlyOccupantInHome').setValue(true);
+    } else {
+      this.hideOccupantButton = false;
+      this.fullTimeOccupantsForm.get('onlyOccupantInHome').setValue(false);
+    }
+
+  }
+
+  onCheckedNoOtherContact(e) {
+    if (e.checked) {
+      this.hideOtherContactButton = true;
+      this.otherContactsForm.get('onlyOtherContact').setValue(true);
+    } else {
+      this.hideOtherContactButton = false;
+      this.otherContactsForm.get('onlyOtherContact').setValue(false);
+    }
+
   }
 
   getSecondaryApplicantsForApplication(applicationId: string) {
@@ -187,6 +249,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
         this.otherContactsData = otherContacts;
         this.otherContactsDataSource.next(this.otherContactsData);
         this.otherContactsForm.get('otherContacts').setValue(this.otherContactsData);
+        this.disableOnlyOtherContact = this.otherContactsDataSource.getValue().length > 0
       },
       error: (error) => {
         console.error(error);
@@ -196,7 +259,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
   }
 
   getFullTimeOccupantsForApplication(applicationId: string) {
-
+    
     if (applicationId === undefined) {
       applicationId = this.dfaApplicationMainDataService.getApplicationId();
     }
@@ -206,6 +269,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
         this.fullTimeOccupantsData = fullTimeOccupants;
         this.fullTimeOccupantsDataSource.next(this.fullTimeOccupantsData);
         this.fullTimeOccupantsForm.get('fullTimeOccupants').setValue(this.fullTimeOccupantsData);
+        this.disableOnlyOccupant = this.fullTimeOccupantsDataSource.getValue().length > 0
       },
       error: (error) => {
         console.error(error);
@@ -220,6 +284,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
     this.fullTimeOccupantsForm.get('addNewFullTimeOccupantIndicator').setValue(true);
     this.fullTimeOccupantsForm.get('fullTimeOccupant.deleteFlag').setValue(false);
     this.fullTimeOccupantsForm.get('fullTimeOccupant.applicationId').setValue(this.dfaApplicationMainDataService.getApplicationId());
+    this.disableOnlyOccupant = true;
   }
 
   saveFullTimeOccupants(): void {
@@ -231,6 +296,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
         this.fullTimeOccupantsDataSource.next(this.fullTimeOccupantsData);
         this.fullTimeOccupantsForm.get('fullTimeOccupants').setValue(this.fullTimeOccupantsData);
         this.showFullTimeOccupantForm = !this.showFullTimeOccupantForm;
+        this.disableOnlyOccupant = this.fullTimeOccupantsDataSource.getValue().length > 0
       },
       error: (error) => {
         console.error(error);
@@ -245,6 +311,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
   cancelFullTimeOccupants(): void {
     this.showFullTimeOccupantForm = !this.showFullTimeOccupantForm;
     this.fullTimeOccupantsForm.get('addNewFullTimeOccupantIndicator').setValue(false);
+    this.disableOnlyOccupant = this.fullTimeOccupantsDataSource.getValue().length > 0
   }
 
   deleteFullTimeOccupantRow(index: number): void {
@@ -254,6 +321,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
         this.fullTimeOccupantsData.splice(index, 1);
         this.fullTimeOccupantsDataSource.next(this.fullTimeOccupantsData);
         this.fullTimeOccupantsForm.get('fullTimeOccupants').setValue(this.fullTimeOccupantsData);
+        this.disableOnlyOccupant = this.showFullTimeOccupantForm
         if (this.fullTimeOccupantsData.length === 0) {
           this.fullTimeOccupantsForm
             .get('addNewFullTimeOccupantIndicator')
@@ -274,6 +342,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
     this.otherContactsForm.get('addNewOtherContactIndicator').setValue(true);
     this.otherContactsForm.get('otherContact.deleteFlag').setValue(false);
     this.otherContactsForm.get('otherContact.applicationId').setValue(this.dfaApplicationMainDataService.getApplicationId());
+    this.disableOnlyOtherContact = true;
   }
 
   saveOtherContact(): void {
@@ -288,6 +357,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
             this.otherContactsForm.get('otherContacts').setValue(this.otherContactsData);
             this.showOtherContactForm = !this.showOtherContactForm;
             this.otherContactsEditFlag = !this.otherContactsEditFlag;
+            this.disableOnlyOtherContact = this.otherContactsDataSource.getValue().length > 0
           },
           error: (error) => {
             console.error(error);
@@ -302,6 +372,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
             this.otherContactsDataSource.next(this.otherContactsData);
             this.otherContactsForm.get('otherContacts').setValue(this.otherContactsData);
             this.showOtherContactForm = !this.showOtherContactForm;
+            this.disableOnlyOtherContact = this.otherContactsDataSource.getValue().length > 0
           },
           error: (error) => {
             console.error(error);
@@ -318,6 +389,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
     this.showOtherContactForm = !this.showOtherContactForm;
     this.otherContactsForm.get('addNewOtherContactIndicator').setValue(false);
     this.otherContactText = 'New Other Contact'
+    this.disableOnlyOtherContact = this.otherContactsDataSource.getValue().length > 0
   }
 
 
@@ -340,6 +412,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
         this.otherContactsData.splice(index, 1);
         this.otherContactsDataSource.next(this.otherContactsData);
         this.otherContactsForm.get('otherContacts').setValue(this.otherContactsData);
+        this.disableOnlyOtherContact = this.showOtherContactForm
         if (this.otherContactsData.length === 0) {
           this.otherContactsForm
             .get('addNewOtherContactIndicator')
@@ -422,6 +495,28 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
     });
   }
 
+  updateFullTimeOccupantOnlyOccupantInHome(value): void {
+    value == true ?
+      this.fullTimeOccupantsForm.get('fullTimeOccupants').setValidators(null) :
+      this.fullTimeOccupantsForm.get('fullTimeOccupants').setValidators([Validators.required]);
+    this.dfaApplicationMainDataService.setIsOnlyOccupantInHome(value);
+
+    this.fullTimeOccupantsForm
+      .get('fullTimeOccupants')
+      .updateValueAndValidity();
+  }
+
+  updateOnlyOtherContact(value): void {
+    value == true ?
+      this.otherContactsForm.get('otherContacts').setValidators(null) :
+      this.otherContactsForm.get('otherContacts').setValidators([Validators.required]);
+    this.dfaApplicationMainDataService.setIsOnlyOtherContact(value);
+
+    this.otherContactsForm
+      .get('otherContacts')
+      .updateValueAndValidity();
+  }
+
   updateFullTimeOccupantOnVisibility(): void {
     this.fullTimeOccupantsForm
       .get('fullTimeOccupant.firstName')
@@ -468,25 +563,7 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
   }
 
   confirmDeleteOtherContactRow(index: number): void {
-    if (this.otherContactsData.length == 1) {
-      this.dialog
-        .open(DFADeleteConfirmDialogComponent, {
-          data: {
-            content: "DFA requires that you have at least one Other Contact.<br/>Please add a new contact before deleting this one."
-          },
-          width: '500px',
-          disableClose: true
-        })
-        .afterClosed()
-        .subscribe((result) => {
-          //if (result === 'confirm') {
-          //  this.deleteOtherContactRow(index);
-          //}
-        });
-    }
-    else {
-      this.deleteOtherContactRow(index);
-    }
+    this.deleteOtherContactRow(index);
   }
 
   /**
@@ -516,13 +593,14 @@ export default class OccupantsComponent implements OnInit, OnDestroy {
     MatCardModule,
     MatButtonModule,
     MatFormFieldModule,
-    TextMaskModule,
+    IMaskModule,
     CustomPipeModule,
     MatSelectModule,
     MatInputModule,
     MatIconModule,
     ReactiveFormsModule,
     DirectivesModule,
+    MatCheckboxModule
   ],
   declarations: [OccupantsComponent]
 })

@@ -175,14 +175,26 @@ namespace EMBC.Utilities.Hosting
             services.AddAutoMapper((sp, cfg) => { cfg.ConstructServicesUsing(t => sp.GetRequiredService(t)); }, assemblies);
             services.AddCors(opts => opts.AddDefaultPolicy(policy =>
             {
+                string[] originSplit = new string[] { };
                 // try to get array of origins from section array
                 var corsOrigins = configuration.GetSection("cors:origins").GetChildren().Select(c => c.Value).ToArray();
                 // try to get array of origins from value
-                if (!corsOrigins.Any()) corsOrigins = configuration.GetValue("cors:origins", string.Empty).Split(',');
-                corsOrigins = corsOrigins.Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
-                if (corsOrigins.Any())
+                if (!corsOrigins.Any())
                 {
-                    policy.SetIsOriginAllowedToAllowWildcardSubdomains().WithOrigins(corsOrigins);
+                    var origin = configuration.GetValue("cors:origins", string.Empty);
+
+                    if (origin != null)
+                    {
+                        originSplit = origin.Split(',');
+                    }
+                }
+                originSplit = originSplit.Where(o => !string.IsNullOrWhiteSpace(o)).ToArray();
+                if (originSplit.Any())
+                {
+                    if (corsOrigins != null)
+                    {
+                        policy.SetIsOriginAllowedToAllowWildcardSubdomains().WithOrigins(originSplit);
+                    }
                 }
             }));
             services.Configure<ForwardedHeadersOptions>(options =>

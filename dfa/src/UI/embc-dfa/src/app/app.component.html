@@ -4,10 +4,9 @@
     (closeEvent)="closeOutageBanner($event)"
   ></app-outage-banner>
 
-  <!--<app-environment-banner
-    [environment]="environment"
-    *ngIf="environment !== null && environment !== undefined"
-  ></app-environment-banner>-->
+  @if (environment !== null && environment !== undefined) {
+    <app-environment-banner [environment]="environment"></app-environment-banner>
+  }
 
   <app-header
     [ngStyle]="
@@ -30,9 +29,9 @@
     "
     [class.body-border]="environment !== null && environment !== undefined"
   >
-    <!--<div class="app-error">
+    <div class="app-error">
       <app-alert></app-alert>
-    </div>-->
+    </div>
 
     <div>
       <router-outlet *ngIf="!isLoading"></router-outlet>

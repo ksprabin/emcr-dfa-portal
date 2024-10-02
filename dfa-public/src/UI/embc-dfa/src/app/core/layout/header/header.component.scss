@@ -2,6 +2,37 @@
   color: #ffffff;
 }
 
+.background {
+  background-image: url(/assets/images/ess-background.jpg);
+  background-repeat: repeat-x;
+  background-color: white;
+}
+
+.current-page {
+  padding: 10px !important;
+  color: black !important;
+}
+
+.breadcrumb-toolbar {
+  min-height: 50px;
+}
+
+/*::ng-deep .breadcrumb-toolbar .mdc-button__label {
+  color: rgb(99, 157, 212);
+}*/
+
+::ng-deep .breadcrumb-toolbar .mat-mdc-button:not(:disabled) {
+  color: #003366 !important;
+}
+
+.breadcrumb-toolbar a {
+  color: rgb(99, 157, 212);
+}
+
+.breadcrumb-toolbar span {
+  color: rgb(99, 157, 212);
+}
+
 .heading-text2 {
   color: #fcba19;
   padding-left: 2px;

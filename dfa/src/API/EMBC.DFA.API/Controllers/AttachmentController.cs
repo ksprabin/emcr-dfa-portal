@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace EMBC.DFA.API.Controllers
 {
@@ -22,17 +23,19 @@ namespace EMBC.DFA.API.Controllers
         private readonly IMessagingClient messagingClient;
         private readonly IMapper mapper;
         private readonly IConfigurationHandler handler;
-
+        private readonly ILogger logger;
         public AttachmentController(
             IHostEnvironment env,
             IMessagingClient messagingClient,
             IMapper mapper,
-            IConfigurationHandler handler)
+            IConfigurationHandler handler,
+            ILoggerFactory factory)
         {
             this.env = env;
             this.messagingClient = messagingClient;
             this.mapper = mapper;
             this.handler = handler;
+            logger = factory.CreateLogger<AttachmentController>();
         }
 
         /// <summary>
@@ -49,12 +52,22 @@ namespace EMBC.DFA.API.Controllers
         {
             if (fileUpload.fileData == null && fileUpload.deleteFlag == false) return BadRequest("FileUpload data cannot be empty.");
             if (fileUpload.id == null && fileUpload.deleteFlag == true) return BadRequest("FileUpload id cannot be empty on delete");
+            bool error = false;
 
             if (fileUpload.deleteFlag == true)
             {
                 var parms = new dfa_DFAActionDeleteDocuments_parms();
                 if (fileUpload.id != null) parms.AppDocID = (Guid)fileUpload.id;
-                var result = await handler.DeleteFileUploadAsync(parms);
+                string result = "Deleted";
+                try
+                {
+                    result = await handler.DeleteFileUploadAsync(parms);
+                }
+                catch (Exception ex)
+                {
+                    error = true;
+                    logger.LogError(ex, "Error uploading file");
+                }
                 return Ok(result);
             }
             else
@@ -63,8 +76,25 @@ namespace EMBC.DFA.API.Controllers
                 var submissionEntity = mapper.Map<SubmissionEntity>(fileUpload);
                 submissionEntity.documentCollection = Enumerable.Empty<AttachmentEntity>();
                 submissionEntity.documentCollection = submissionEntity.documentCollection.Append<AttachmentEntity>(mappedFileUpload);
-                var result = await handler.HandleFileUploadAsync(submissionEntity);
-                return Ok(result);
+                string result = "Submitted";
+                try
+                {
+                    result = await handler.HandleFileUploadAsync(submissionEntity);
+                }
+                catch (Exception ex)
+                {
+                    error = true;
+                    logger.LogError(ex, "Error uploading file");
+                }
+
+                if (error)
+                {
+                    return StatusCode(500, "Error uploading file");
+                }
+                else
+                {
+                    return Ok(result);
+                }
             }
         }
 

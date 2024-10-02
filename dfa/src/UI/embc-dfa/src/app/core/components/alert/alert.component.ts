@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Alert } from '../../model/alert';
-import { AlertService } from '../../services/alert.service';
+import { Alert } from 'src/app/core/model/alert';
+import { AlertService } from 'src/app/core/services/alert.service';
 
 @Component({
   selector: 'app-alert',
   templateUrl: './alert.component.html',
-  styleUrls: ['./alert.component.scss']
+  styleUrls: ['./alert.component.scss'],
+  standalone: true,
+  imports: []
 })
 export class AlertComponent implements OnInit {
   type: string;

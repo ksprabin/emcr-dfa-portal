@@ -1,4 +1,4 @@
-<mat-card style="border: none !important; box-shadow: none !important;">
+<mat-card appearance="outlined" style="border: none !important; box-shadow: none !important;">
   <div *ngIf="type === 'profile'">
     <ng-container *ngTemplateOutlet="profile"></ng-container>
   </div>
@@ -259,7 +259,18 @@
             class="col-md-3">
             City:
           </div>
-
+          <div class="col-md-3" *ngIf="((formCreationService.addressForm$ | async)?.value?.mailingAddress
+                  ?.addressLine1 == null ||
+                               (formCreationService.addressForm$ | async)?.value?.mailingAddress
+                  ?.addressLine1 == '') &&
+               ((formCreationService.addressForm$ | async)?.value?.mailingAddress
+                  ?.addressLine2 == null ||
+                               (formCreationService.addressForm$ | async)?.value?.mailingAddress
+                  ?.addressLine2 == '') && ((formCreationService.addressForm$ | async)?.value?.mailingAddress
+                  ?.postalCode == null ||
+                               (formCreationService.addressForm$ | async)?.value?.mailingAddress
+                  ?.postalCode == '')
+                               "><b>No mailing address available.</b></div>
           <div
             class="col-md-3"
             *ngIf="
@@ -459,7 +470,7 @@
               class="edit-image"
               mat-icon-button
               aria-label="Edit"
-              (click)="navigateToStep(0)"
+              (click)="navigateToStep(1)"
             >
               <img src="/assets/images/edit.svg" height="35" width="35" />
               <img
@@ -658,7 +669,7 @@
           <div class="col-md-3">
             <span [ngClass]="{'missing-info': !(formCreationService.damagedPropertyAddressForm$ | async)?.value?.businessLegalName || (formCreationService.damagedPropertyAddressForm$ | async)?.controls.businessLegalName.invalid}" *ngIf="isSmallBusinessOwner">Business legal name:</span>
             <span [ngClass]="{'missing-info': !(formCreationService.damagedPropertyAddressForm$ | async)?.value?.businessLegalName || (formCreationService.damagedPropertyAddressForm$ | async)?.controls.businessLegalName.invalid}" *ngIf="isFarmOwner">Farm legal name:</span>
-            <span [ngClass]="{'missing-info': !(formCreationService.damagedPropertyAddressForm$ | async)?.value?.businessLegalName || (formCreationService.damagedPropertyAddressForm$ | async)?.controls.businessLegalName.invalid}" *ngIf="isCharitableOrganization">Charitable organization legal name:</span>
+            <span [ngClass]="{'missing-info': !(formCreationService.damagedPropertyAddressForm$ | async)?.value?.businessLegalName || (formCreationService.damagedPropertyAddressForm$ | async)?.controls.businessLegalName.invalid}" *ngIf="isCharitableOrganization">Charitable/non-profit organization legal name:</span>
           </div>
           <div class="col-md-3">
             <span [ngClass]="{'missing-info': !(formCreationService.damagedPropertyAddressForm$ | async)?.value?.businessLegalName || (formCreationService.damagedPropertyAddressForm$ | async)?.controls.businessLegalName.invalid}">
@@ -781,6 +792,43 @@
             }}</span>
           </div>
         </div>
+
+        <div class="row info-detail" *ngIf="isResidentialTenant">
+          <div class="col-md-3"><span>Landlord First Name:</span></div>
+          <div class="col-md-3">
+            <span>{{
+              (formCreationService.damagedPropertyAddressForm$ | async)?.value
+  .landlordGivenNames2
+            }}</span>
+          </div>
+        </div>
+        <div class="row info-detail" *ngIf="isResidentialTenant">
+          <div class="col-md-3"><span>Landlord Last Name:</span></div>
+          <div class="col-md-3">
+            <span>{{
+              (formCreationService.damagedPropertyAddressForm$ | async)?.value
+  .landlordSurname2
+            }}</span>
+          </div>
+        </div>
+        <div class="row info-detail" *ngIf="isResidentialTenant">
+          <div class="col-md-3"><span>Landlord Phone:</span></div>
+          <div class="col-md-3">
+            <span>{{
+              (formCreationService.damagedPropertyAddressForm$ | async)?.value
+  .landlordPhone2
+            }}</span>
+          </div>
+        </div>
+        <div class="row info-detail" *ngIf="isResidentialTenant">
+          <div class="col-md-3"><span>Landlord Email:</span></div>
+          <div class="col-md-3"><span>
+            {{
+              (formCreationService.damagedPropertyAddressForm$ | async)?.value
+                .landlordEmail2
+            }}</span>
+          </div>
+        </div>
       </mat-card-content>
 
       <!-- Cause of Damage -->
@@ -792,7 +840,7 @@
               class="edit-image"
               mat-icon-button
               aria-label="Edit"
-              (click)="navigateToStep(1)"
+              (click)="navigateToStep(2)"
             >
               <img src="/assets/images/edit.svg" height="35" width="35" />
               <img
@@ -912,6 +960,26 @@
             }}
           </span></div>
         </div>
+        <div class="row info-detail">
+          <div class="col-md-3"><span [ngClass]="{'missing-info': !(((formCreationService.propertyDamageForm$ | async)?.value.previousApplication !== ''))}">Previous DFA application?:</span></div>
+          <div class="col-md-3"><span [ngClass]="{'missing-info': !(((formCreationService.propertyDamageForm$ | async)?.value.previousApplication !== ''))}">
+            {{
+              (formCreationService.propertyDamageForm$ | async)?.value
+                .previousApplication !== ''
+                ? (formCreationService.propertyDamageForm$ | async)?.value.previousApplication
+                : 'Make a selection'
+            }}
+          </span></div>
+        </div>
+        <div class="row info-detail" *ngIf="(formCreationService.propertyDamageForm$ | async)?.value.previousApplication == 'Yes' || (formCreationService.propertyDamageForm$ | async)?.value.previousApplication == 'Not sure' ">
+          <div class="col-md-3"><span>Previous DFA application details?:</span></div>
+          <div class="col-md-3"><span>
+            {{
+              (formCreationService.propertyDamageForm$ | async)?.value
+                .previousApplicationText
+            }}
+          </span></div>
+        </div>
       </mat-card-content>
 
       <!-- Occupants -->
@@ -923,7 +991,7 @@
               class="edit-image"
               mat-icon-button
               aria-label="Edit"
-              (click)="navigateToStep(2)"
+              (click)="navigateToStep(3)"
             >
               <img src="/assets/images/edit.svg" height="35" width="35" />
               <img
@@ -966,9 +1034,19 @@
             ></tr>
           </table>
         </div>
-        <div class="row info-detail" *ngIf="(isHomeowner || isResidentialTenant) && (formCreationService.fullTimeOccupantsForm$ | async)?.value?.fullTimeOccupants?.length == 0">
+        <div class="row info-detail" *ngIf="(isHomeowner || isResidentialTenant) &&
+             ((formCreationService.fullTimeOccupantsForm$ | async)?.value?.onlyOccupantInHome == false &&
+             (formCreationService.fullTimeOccupantsForm$ | async)?.value?.fullTimeOccupants?.length == 0)
+             ">
           <span style="color:red">At least one full time occupant is required.</span>
         </div>
+
+        <div class="row info-detail" *ngIf="(isHomeowner || isResidentialTenant) &&
+        ((formCreationService.fullTimeOccupantsForm$ | async)?.value?.onlyOccupantInHome == true)">
+         <b>Full Time Occupants</b>
+         <span>No full time occupants, I am the only person in the home</span>
+       </div>
+
         <div class="row info-detail" *ngIf="(formCreationService.secondaryApplicantsForm$ | async)?.value?.secondaryApplicants?.length > 0">
           <b>Secondary Applicants</b>
           <table mat-table [dataSource]="secondaryApplicantsDataSource">
@@ -1021,6 +1099,7 @@
           </table>
         </div>
         <div class="row info-detail" *ngIf="(formCreationService.secondaryApplicantsForm$ | async)?.value?.secondaryApplicants?.length == 0">
+          <b>Secondary Applicants</b>
           <span>No secondary applicants.</span>
         </div>
         <div class="row info-detail" *ngIf="(formCreationService.otherContactsForm$ | async)?.value?.otherContacts?.length > 0">
@@ -1064,8 +1143,14 @@
             ></tr>
           </table>
         </div>
-        <div class="row info-detail" *ngIf="(formCreationService.otherContactsForm$ | async)?.value?.otherContacts?.length == 0">
+        <div class="row info-detail" *ngIf="(formCreationService.otherContactsForm$ | async)?.value?.onlyOtherContact == false &&
+             (formCreationService.otherContactsForm$ | async)?.value?.otherContacts?.length == 0">
           <span style="color:red">At least one other contact is required.</span>
+        </div>
+
+        <div class="row info-detail" *ngIf="(formCreationService.otherContactsForm$ | async)?.value?.onlyOtherContact == true">
+        <b>Other Contacts</b>
+        <span>I don't have an Other Contact</span>
         </div>
       </mat-card-content>
 
@@ -1078,7 +1163,7 @@
               class="edit-image"
               mat-icon-button
               aria-label="Edit"
-              (click)="navigateToStep(3)"
+              (click)="navigateToStep(4)"
             >
               <img src="/assets/images/edit.svg" height="35" width="35" />
               <img
@@ -1197,7 +1282,7 @@
               class="edit-image"
               mat-icon-button
               aria-label="Edit"
-              (click)="navigateToStep(4)"
+              (click)="navigateToStep(5)"
             >
               <img src="/assets/images/edit.svg" height="35" width="35" />
               <img
@@ -1298,7 +1383,7 @@
               class="edit-image"
               mat-icon-button
               aria-label="Edit"
-              (click)="navigateToStep(5)"
+              (click)="navigateToStep(6)"
             >
               <img src="/assets/images/edit.svg" height="35" width="35" />
               <img
@@ -1310,6 +1395,11 @@
           </div>
         </div>
         <hr />
+
+        <div class="row info-detail" *ngIf="requiredDocumentsDataSource?.data?.length == 0">
+          <span>No required documents.</span>
+        </div>
+
         <div class="row info-detail" *ngIf="requiredDocumentsDataSource?.data?.length > 0">
           <b>Required Documents</b>
           <table mat-table [dataSource]="requiredDocumentsDataSource">
@@ -1361,6 +1451,8 @@
             ></tr>
           </table>
         </div>
+       
+
         <div class="row info-detail" *ngIf="(formCreationService.fileUploadsForm$ | async)?.hasError('noInsuranceTemplate')">
           <span style="color:red">Insurance template is required.</span>
         </div>
@@ -1408,7 +1500,7 @@
               class="edit-image"
               mat-icon-button
               aria-label="Edit"
-              (click)="navigateToStep(5)"
+              (click)="navigateToStep(6)"
             >
               <img src="/assets/images/edit.svg" height="35" width="35" />
               <img

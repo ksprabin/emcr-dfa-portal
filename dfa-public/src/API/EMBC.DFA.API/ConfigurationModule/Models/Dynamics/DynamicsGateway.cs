@@ -372,7 +372,7 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                                    dfa_receiveguidanceassessingyourinfra = objApp.dfa_receiveguidanceassessingyourinfra,
                                    dfa_applicationcasebpfstages = objApp.dfa_applicationcasebpfstages,
                                    dfa_applicationcasebpfsubstages = objApp.dfa_applicationcasebpfsubstages,
-                                   dfa_bpfcloseddate = objApp.dfa_bpfcloseddate
+                                   dfa_bpfcloseddate = !string.IsNullOrEmpty(objApp.dfa_bpfcloseddate) ? DateTime.Parse(objApp.dfa_bpfcloseddate).ToLocalTime().ToString() : objApp.dfa_bpfcloseddate,
                                }).AsEnumerable().OrderByDescending(m => DateTime.Parse(m.createdon));
 
                 //from objEvent in lstEvents.List
@@ -947,14 +947,6 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         {
             try
             {
-                //var lstEvents = await api.GetList<dfa_event>("dfa_events", new CRMGetListOptions
-                //{
-                //    Select = new[]
-                //    {
-                //        "dfa_eventid", "dfa_id", "dfa_eventname", "dfa_eventtype"
-                //    }
-                //});
-
                 var list = await api.GetList<dfa_project>("dfa_projects", new CRMGetListOptions
                 {
                     Select = new[]
@@ -969,8 +961,27 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                     Filter = $"_dfa_applicationid_value eq {applicationId}"
                 });
 
-                //where objAppEvent != null && (objAppEvent.dfa_eventtype == Convert.ToInt32(EventType.Public).ToString()
-                //                 || objAppEvent.dfa_eventtype == Convert.ToInt32(EventType.PrivatePublic).ToString())
+                foreach (dfa_project project in list.List)
+                {
+                    var lstAmendment = await api.GetList<dfa_projectamendment>("dfa_projectamendments", new CRMGetListOptions
+                    {
+                        Select = new[]
+                        {
+                            "dfa_projectamendmentid", "_dfa_project_value"
+                        },
+                        Filter = $"_dfa_project_value eq {project.dfa_projectid}"
+                    });
+
+                    if (lstAmendment.List.Count() > 0)
+                    {
+                        project.hasAmendments = true;
+                    }
+                    else
+                    {
+                        project.hasAmendments = false;
+                    }
+                }
+
                 var lstApps = (from objApp in list.List
                                select new dfa_project
                                {
@@ -984,12 +995,74 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                                    dfa_18monthdeadline = objApp.dfa_18monthdeadline,
                                    createdon = objApp.createdon,
                                    statuscode = objApp.statuscode,
+                                   hasAmendments = objApp.hasAmendments,
                                    dfa_projectbusinessprocessstages = objApp.dfa_projectbusinessprocessstages,
                                    dfa_projectbusinessprocesssubstages = objApp.dfa_projectbusinessprocesssubstages,
-                                   dfa_bpfclosedate = objApp.dfa_bpfclosedate
+                                   dfa_bpfclosedate = !string.IsNullOrEmpty(objApp.dfa_bpfclosedate) ? DateTime.Parse(objApp.dfa_bpfclosedate).ToLocalTime().ToString() : objApp.dfa_bpfclosedate,
                                }).AsEnumerable().OrderByDescending(m => m.createdon);
 
                 return lstApps;
+            }
+            catch (System.Exception ex)
+            {
+                throw new Exception($"Failed to obtain access token from {ex.Message}", ex);
+            }
+        }
+
+        public async Task<IEnumerable<dfa_projectamendment>> GetProjectAmendmentListAsync(string projectId)
+        {
+            try
+            {
+                var lstAmendment = await api.GetList<dfa_projectamendment>("dfa_projectamendments", new CRMGetListOptions
+                {
+                    Select = new[]
+                        {
+                            "dfa_projectamendmentid", "_dfa_project_value", "createdon",
+                            "dfa_additionalprojectcostdecision",
+                            "dfa_amendmentnumber",
+                            "dfa_amendmentreason",
+                            "dfa_approvedadditionalprojectcost",
+                            "dfa_deadlineextensionapproved",
+                            "dfa_emcrapprovalcomments",
+                            "dfa_estimatedadditionalprojectcost",
+                            "dfa_requestforadditionalprojectcost",
+                            "dfa_requestforprojectdeadlineextension",
+                            "dfa_amendedprojectdeadlinedate",
+                            "dfa_amended18monthdeadline",
+                            "dfa_amendmentapproveddate",
+                            "dfa_amendmentreceiveddate",
+                            "dfa_amendmentstages",
+                            "dfa_amendmentsubstages",
+                            "dfa_projectamendmentid"
+                        },
+                    Filter = $"_dfa_project_value eq {projectId}"
+                    //Filter = $"_dfa_project_value eq 25fff2cb-a15b-4c94-bd94-c9107e8b383a"
+                });
+
+                var lstPrjAmnds = (from objApp in lstAmendment.List
+                               select new dfa_projectamendment
+                               {
+                                   createdon = objApp.createdon,
+                                   _dfa_project_value = objApp._dfa_project_value,
+                                   dfa_projectamendmentid = objApp.dfa_projectamendmentid,
+                                   dfa_additionalprojectcostdecision = objApp.dfa_additionalprojectcostdecision,
+                                   dfa_amendmentstages = objApp.dfa_amendmentstages,
+                                   dfa_amendmentsubstages = objApp.dfa_amendmentsubstages,
+                                   dfa_amendmentnumber = objApp.dfa_amendmentnumber,
+                                   dfa_amendmentreason = objApp.dfa_amendmentreason,
+                                   dfa_approvedadditionalprojectcost = objApp.dfa_approvedadditionalprojectcost,
+                                   dfa_deadlineextensionapproved = objApp.dfa_deadlineextensionapproved,
+                                   dfa_emcrapprovalcomments = objApp.dfa_emcrapprovalcomments,
+                                   dfa_estimatedadditionalprojectcost = objApp.dfa_estimatedadditionalprojectcost,
+                                   dfa_requestforadditionalprojectcost = objApp.dfa_requestforadditionalprojectcost,
+                                   dfa_requestforprojectdeadlineextension = objApp.dfa_requestforprojectdeadlineextension,
+                                   dfa_amendedprojectdeadlinedate = !string.IsNullOrEmpty(objApp.dfa_amendedprojectdeadlinedate) ? DateTime.Parse(objApp.dfa_amendedprojectdeadlinedate).ToLocalTime().ToString() : objApp.dfa_amendedprojectdeadlinedate,
+                                   dfa_amended18monthdeadline = !string.IsNullOrEmpty(objApp.dfa_amended18monthdeadline) ? DateTime.Parse(objApp.dfa_amended18monthdeadline).ToLocalTime().ToString() : objApp.dfa_amended18monthdeadline,
+                                   dfa_amendmentapproveddate = !string.IsNullOrEmpty(objApp.dfa_amendmentapproveddate) ? DateTime.Parse(objApp.dfa_amendmentapproveddate).ToLocalTime().ToString() : objApp.dfa_amendmentapproveddate,
+                                   dfa_amendmentreceiveddate = !string.IsNullOrEmpty(objApp.dfa_amendmentreceiveddate) ? DateTime.Parse(objApp.dfa_amendmentreceiveddate).ToLocalTime().ToString() : objApp.dfa_amendmentreceiveddate,
+                               }).AsEnumerable().OrderByDescending(m => m.createdon);
+
+                return lstPrjAmnds;
             }
             catch (System.Exception ex)
             {
@@ -1083,7 +1156,7 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                                    createdon = objClaim.createdon,
                                    dfa_costsharing = objClaim.dfa_costsharing,
                                    dfa_eligiblepayable = objClaim.dfa_eligiblepayable,
-                                   dfa_bpfclosedate = objClaim.dfa_bpfclosedate,
+                                   dfa_bpfclosedate = !string.IsNullOrEmpty(objClaim.dfa_bpfclosedate) ? DateTime.Parse(objClaim.dfa_bpfclosedate).ToLocalTime().ToString() : objClaim.dfa_bpfclosedate,
                                    dfa_onetimedeductionamount = objClaim.dfa_onetimedeductionamount,
                                    dfa_paidclaimamount = objClaim.dfa_paidclaimamount,
                                }).AsEnumerable().OrderByDescending(m => m.createdon);

@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 using HandlebarsDotNet;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
 using pdfservice.Models;
 using pdfservice.Utils;
 using Stubble.Core.Builders;
@@ -49,24 +41,64 @@ namespace pdfservice.Controllers
         [Produces("text/html")]
         public IActionResult GetPDF_DFATest()
         {
-            var template = "dfa_application_demo";
+            var template = "dfa_application_summary";
+            var contacts = new Contact[] {
+                    new Contact { FirstName = "Karim", LastName= "Hass",CellPhone="222233",BusinessPhone="44444444",Email="Karim@12332.com",JobTitle="Co-Owner",Notes="notes"},
+                    new Contact { FirstName = "Karim1", LastName= "Hass1",CellPhone="2222331",BusinessPhone="444444441",Email="Karim@123321.com",JobTitle="Co-Owner1",Notes="notes1"},
+                    };
+            var contactText = new StringBuilder();
+            contactText.Append($@"<div class='contacts-container' ><table class='contacts' style='width:95%'>");
+            
+            contactText.Append($@"<tr style='background-color: #415a88;color: #fff;'>
+                         <th>First Name</th><th>Last Name</th><th>Business Phone</th><th>Email</th><th>Cell Phone</th><th>Job Title</th><th>Notes</th></tr>");
+            foreach (var contact in contacts)
+            {
+                contactText.Append($@"<tr>
+                        <td>{contact.FirstName}</td>
+                        <td>{contact.LastName}</td>
+                        <td>{contact.BusinessPhone}</td>   
+                        <td>{contact.Email}</td>
+                        <td>{contact.CellPhone}</td>
+                        <td>{contact.JobTitle}</td>
+                        <td>{contact.Notes}</td>
+                        </tr>");
+            }
+
+            contactText.Append("</table></div>");
+
             var rawdata = new
             {
-                applicationType = "SmallBusinessOwner",
-                hasInsurance = false,
-                dmgAddressLine1 = "address 1",
-                dmgAddressLine2 = "address 2",
-                dmgCity = "city ",
-                dmgProvince = "dsgdfag",
-                dmgDescription = "xdgdg",
+                IndigenousGoverningBody = "SmallBusinessOwner",
+                DateofDamageFrom = "DateofDamageTo",
+                DateofDamageTo = "DateofDamageTo",
+                DisasterEvent = "DisasterEvent",
+                CauseofDamage = "CauseofDamage ",
+                GovernmentType = "GovernmentType",
+                OtherGoverningBody = "OtherGoverningBody",
+                DescribeYourOrganization = "DescribeYourOrganization",
 
-                signatures = new SignatureGroupRequestModel[] {
-                    new SignatureGroupRequestModel { PrintName = "test name1", SignDate = "test date1"},
-                    new SignatureGroupRequestModel { PrintName = "test name2", SignDate = "test date2" },
-                    }
+                //////////// Second section////////////
+                DoingBusinessAsDBAName= "DoingBusinessAsDBAName",
+                BusinessNumber = "BusinessNumber",
+                AddressLine1 = "AddressLine1",
+                AddressLine2 = "AddressLine2",
+                City = "City",
+                Province = "Province",
+                PostalCode = "PostalCode",
+
+                //Primary Contact Details
+                FirstName = "FirstName",
+                LastName = "LastName",
+                Department = "Department",
+                BusinessPhone = "BusinessPhone",
+                EmailAddress = "EmailAddress",
+                CellPhone = "CellPhone",
+                JobTitle = "JobTitle",
+                ContactNotes = "ContactNotes",
+
+                //Contacts
+                contacts = contactText,
             };
-
-
             string filename = $"Templates/{template}.mustache";
             if (System.IO.File.Exists(filename))
             {
@@ -75,78 +107,6 @@ namespace pdfservice.Controllers
 
                 handlebar = Handlebars.Compile(format);
                 var html = handlebar(rawdata);
-
-                return Content(html, "text/html", Encoding.UTF8);
-            }
-
-            return new NotFoundResult();
-        }
-
-
-        [HttpPost]
-        [Route("GetPDF/{template}")]
-        [Produces("application/pdf")]
-        [ProducesResponseType(200, Type = typeof(FileContentResult))]
-        public IActionResult GetPDF([FromBody] Dictionary<string, object> rawdata, string template)
-        {
-            _logger.LogInformation($"PDF-Service GetPDF: received request");
-
-            // first do a mustache merge.
-            string filename = $"Templates/{template}.mustache";
-
-            _logger.LogInformation($"PDF-Service GetPDF: template filename is: {filename}");
-
-            // remove serialized "signature" entry
-            Dictionary<string, object> parameters = new Dictionary<string, object>();
-            parameters = rawdata
-                .Where(x => x.Key != "signatures")
-                .ToDictionary();
-
-            // extract serialized "signature" entry - which is actually an array of SignatureGroup objects
-            var sigparms = rawdata
-                .Where(x => x.Key == "signatures")
-                .Select(x => x.Value)
-                .FirstOrDefault()
-                .ToString();
-
-            SignatureGroupViewModel[] signaturesViewModel = null;
-
-            try
-            {
-                // deserialize "signature" entry correctly
-                var signaturesRequest = JsonConvert.DeserializeObject<SignatureGroupRequestModel[]>(sigparms);
-                // convert SignatureGroupRequestModel -> SignatureGroupViewModel
-                signaturesViewModel = _pdfWebUtility.ConvertSignatureGroup(signaturesRequest);
-
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                _logger.LogError($"PDF-Service GetPDF: Exception: {ex.Message}");
-            }
-
-            // add signatures back into Mustache data context
-            parameters.Add("signatures", signaturesViewModel);
-
-            if (System.IO.File.Exists(filename))
-            {
-                string html = null;
-
-                try
-                {
-                    _logger.LogInformation($"PDF-Service GetPDF: about to read {filename} and merge Mustache content");
-
-                    string format = System.IO.File.ReadAllText(filename);
-
-                    // 2024-04-15 Register Handlebar helper (extra features)
-                    HandlebarsTemplate<object, object> handlebar = GetHandlebarsTemplate(format);
-                    html = handlebar(parameters);
-
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
 
                 var doc = new HtmlToPdfDocument()
                 {
@@ -166,7 +126,9 @@ namespace pdfservice.Controllers
                 try
                 {
                     var pdf = _generatePdf.Convert(doc);
-                    return File(pdf, "application/pdf");
+                    string bitString = BitConverter.ToString(pdf);
+
+                    return File(pdf, "application/pdf", "test.pdf");
                 }
                 catch (Exception e)
                 {
@@ -174,10 +136,180 @@ namespace pdfservice.Controllers
                     _logger.LogError(template);
                     _logger.LogError(html);
                 }
+                return Content(html, "text/html", Encoding.UTF8);
             }
 
             return new NotFoundResult();
         }
+        [HttpPost]
+        [Route("GetPDF/{template}")]
+        [Produces("application/pdf")]
+        [ProducesResponseType(200, Type = typeof(FileContentResult))]
+        public IActionResult GetPDF([FromBody] PdfApplicationData pdfApplicationData, string template)
+        {
+            _logger.LogInformation($"PDF-Service GetPDF: received request");
+
+            //template = "dfa_application_demo";
+            string filename = $"Templates/{template}.mustache";
+
+            _logger.LogInformation($"PDF-Service GetPDF: template filename is: {filename}");
+
+            var contactText = new StringBuilder();
+            contactText.Append($@"<div class='contacts-container' ><table class='contacts' style='width:95%'>");
+
+            contactText.Append($@"<tr style='background-color: #415a88;color: #fff;'>
+                         <th>First Name</th><th>Last Name</th><th>Business Phone</th><th>Email</th><th>Cell Phone</th><th>Job Title</th><th>Notes</th></tr>");
+            foreach (var contact in pdfApplicationData.Contacts)
+            {
+                contactText.Append($@"<tr>
+                        <td>{contact.FirstName}</td>
+                        <td>{contact.LastName}</td>
+                        <td>{contact.BusinessPhone}</td>   
+                        <td>{contact.Email}</td>
+                        <td>{contact.CellPhone}</td>
+                        <td>{contact.JobTitle}</td>
+                        <td>{contact.Notes}</td>
+                        </tr>");
+            }
+
+            contactText.Append("</table></div>");
+            pdfApplicationData.ContactsText = contactText.ToString();
+            if (System.IO.File.Exists(filename))
+            {
+                string format = System.IO.File.ReadAllText(filename);
+                HandlebarsTemplate<object, object> handlebar = GetHandlebarsTemplate(format);
+
+                handlebar = Handlebars.Compile(format);
+                var html = handlebar(pdfApplicationData);
+
+                var doc = new HtmlToPdfDocument()
+                {
+                    GlobalSettings = {
+                        PaperSize = PaperKind.Letter,
+                        Orientation = Orientation.Portrait,
+                        Margins = new MarginSettings(5.0,5.0,5.0,5.0)
+                    },
+
+                    Objects = {
+                        new ObjectSettings()
+                        {
+                            HtmlContent = html
+                        }
+                    }
+                };
+                try
+                {
+                    var pdf = _generatePdf.Convert(doc);
+                    return File(pdf, "application/pdf",$"{pdfApplicationData.LastName},{pdfApplicationData.FirstName}_application_summary.pdf");
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "ERROR rendering PDF");
+                    _logger.LogError(template);
+                    _logger.LogError(html);
+                }
+                return Content(html, "text/html", Encoding.UTF8);
+            }
+
+            return new NotFoundResult();
+        }
+
+
+        //[HttpPost]
+        //[Route("GetPDF/{template}")]
+        //[Produces("application/pdf")]
+        //[ProducesResponseType(200, Type = typeof(FileContentResult))]
+        //public IActionResult GetPDF([FromBody] Dictionary<string, object> rawdata, string template)
+        //{
+        //    _logger.LogInformation($"PDF-Service GetPDF: received request");
+
+        //    // first do a mustache merge.
+        //    string filename = $"Templates/{template}.mustache";
+
+        //    _logger.LogInformation($"PDF-Service GetPDF: template filename is: {filename}");
+
+        //    // remove serialized "signature" entry
+        //    Dictionary<string, object> parameters = new Dictionary<string, object>();
+        //    parameters = rawdata
+        //        .Where(x => x.Key != "signatures")
+        //        .ToDictionary();
+
+        //    // extract serialized "signature" entry - which is actually an array of SignatureGroup objects
+        //    var sigparms = rawdata
+        //        .Where(x => x.Key == "signatures")
+        //        .Select(x => x.Value)
+        //        .FirstOrDefault()
+        //        .ToString();
+
+        //    SignatureGroupViewModel[] signaturesViewModel = null;
+
+        //    try
+        //    {
+        //        // deserialize "signature" entry correctly
+        //        var signaturesRequest = JsonConvert.DeserializeObject<SignatureGroupRequestModel[]>(sigparms);
+        //        // convert SignatureGroupRequestModel -> SignatureGroupViewModel
+        //        signaturesViewModel = _pdfWebUtility.ConvertSignatureGroup(signaturesRequest);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(ex.Message);
+        //        _logger.LogError($"PDF-Service GetPDF: Exception: {ex.Message}");
+        //    }
+
+        //    // add signatures back into Mustache data context
+        //    parameters.Add("signatures", signaturesViewModel);
+
+        //    if (System.IO.File.Exists(filename))
+        //    {
+        //        string html = null;
+
+        //        try
+        //        {
+        //            _logger.LogInformation($"PDF-Service GetPDF: about to read {filename} and merge Mustache content");
+
+        //            string format = System.IO.File.ReadAllText(filename);
+
+        //            // 2024-04-15 Register Handlebar helper (extra features)
+        //            HandlebarsTemplate<object, object> handlebar = GetHandlebarsTemplate(format);
+        //            html = handlebar(parameters);
+
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Debug.WriteLine(ex);
+        //        }
+
+        //        var doc = new HtmlToPdfDocument()
+        //        {
+        //            GlobalSettings = {
+        //                PaperSize = PaperKind.Letter,
+        //                Orientation = Orientation.Portrait,
+        //                Margins = new MarginSettings(5.0,5.0,5.0,5.0)
+        //            },
+
+        //            Objects = {
+        //                new ObjectSettings()
+        //                {
+        //                    HtmlContent = html
+        //                }
+        //            }
+        //        };
+        //        try
+        //        {
+        //            var pdf = _generatePdf.Convert(doc);
+        //            return File(pdf, "application/pdf");
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            _logger.LogError(e, "ERROR rendering PDF");
+        //            _logger.LogError(template);
+        //            _logger.LogError(html);
+        //        }
+        //    }
+
+        //    return new NotFoundResult();
+        //}
 
 
 

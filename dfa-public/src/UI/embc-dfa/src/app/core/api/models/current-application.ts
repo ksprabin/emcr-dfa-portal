@@ -13,6 +13,7 @@ export interface CurrentApplication {
   eventId?: string;
   floodDamage?: null | boolean;
   isErrorInStatus?: boolean;
+  isProjectSubmission?: boolean;
   landslideDamage?: null | boolean;
   otherDamage?: null | boolean;
   otherDamageText?: null | string;

@@ -8,6 +8,7 @@ import { ConfigService } from './core/services/config.service';
 import { EnvironmentInformation } from './core/model/environment-information.model';
 import { OutageService } from './feature-components/outage/outage.service';
 import { ScriptService } from "./core/services/scriptServices";
+import { EnvironmentBannerService } from './core/layout/environment-banner/environment-banner.service';
 
 const SCRIPT_PATH = 'http://ws1.postescanada-canadapost.ca/js/addresscomplete-2.30.min.js?key=ea53-hg74-kb59-ym41';
 
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit {
   public gapi: any;
 
   constructor(
+    public envBannerService: EnvironmentBannerService,
     public outageService: OutageService,
     private alertService: AlertService,
     private bootstrapService: BootstrapService,
@@ -34,8 +36,7 @@ export class AppComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     try {
-      //this.environment = await this.configService.loadEnvironmentBanner();
-      this.environment = null;
+      this.environment = await this.envBannerService.loadEnvironmentBanner();
       await this.bootstrapService.init();
       await this.loginService.tryLogin();
     } catch (error) {

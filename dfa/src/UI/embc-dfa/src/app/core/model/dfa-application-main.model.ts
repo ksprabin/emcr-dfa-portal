@@ -16,9 +16,13 @@ export class DamagedPropertyAddress {
   firstNationsReserve?: null | string;
   isPrimaryAndDamagedAddressSame?: null | boolean;
   landlordEmail?: null | string;
+  landlordEmail2?: null | string;
   landlordGivenNames?: null | string;
+  landlordGivenNames2?: null | string;
   landlordPhone?: null | string;
+  landlordPhone2?: null | string;
   landlordSurname?: null | string;
+  landlordSurname2?: null | string;
   manufacturedHome?: null | boolean;
   occupyAsPrimaryResidence?: null | boolean;
   lossesExceed1000?: null | boolean;
@@ -52,9 +56,13 @@ export class DamagedPropertyAddress {
     isPrimaryAndDamagedAddressSame?: null | boolean,
     eligibleForHomeOwnerGrant?: null | boolean,
     landlordGivenNames?: null | string,
+    landlordGivenNames2?: null | string,
     landlordSurname?: null | string,
+    landlordSurname2?: null | string,
     landlordPhone?: null | string,
+    landlordPhone2?: null | string,
     landlordEmail?: null | string,
+    landlordEmail2?: null | string,
     businessLegalName?: null | string,
     businessManagedByAllOwnersOnDayToDayBasis?: null | boolean,
     employLessThan50EmployeesAtAnyOneTime?: null | boolean,
@@ -84,9 +92,13 @@ export class DamagedPropertyAddressForm {
   isPrimaryAndDamagedAddressSame = new UntypedFormControl();
   lossesExceed1000 = new UntypedFormControl();
   landlordGivenNames = new UntypedFormControl();
+  landlordGivenNames2 = new UntypedFormControl();
   landlordSurname = new UntypedFormControl();
+  landlordSurname2 = new UntypedFormControl();
   landlordPhone = new UntypedFormControl();
+  landlordPhone2 = new UntypedFormControl();
   landlordEmail = new UntypedFormControl();
+  landlordEmail2 = new UntypedFormControl();
   businessLegalName = new UntypedFormControl();
   businessManagedByAllOwnersOnDayToDayBasis = new UntypedFormControl();
   employLessThan50EmployeesAtAnyOneTime = new UntypedFormControl();
@@ -181,20 +193,40 @@ export class DamagedPropertyAddressForm {
     }
     this.landlordGivenNames.setValidators(null);
 
+    if (damagedPropertyAddress.landlordGivenNames2) {
+      this.landlordGivenNames2.setValue(damagedPropertyAddress.landlordGivenNames2);
+    }
+    this.landlordGivenNames2.setValidators(null);
+
     if (damagedPropertyAddress.landlordSurname) {
       this.landlordSurname.setValue(damagedPropertyAddress.landlordSurname);
     }
     this.landlordSurname.setValidators(null);
+
+    if (damagedPropertyAddress.landlordSurname2) {
+      this.landlordSurname2.setValue(damagedPropertyAddress.landlordSurname2);
+    }
+    this.landlordSurname2.setValidators(null);
 
     if (damagedPropertyAddress.landlordPhone) {
       this.landlordPhone.setValue(damagedPropertyAddress.landlordPhone);
     }
     this.landlordPhone.setValidators([customValidator.maskedNumberLengthValidator().bind(customValidator)]);
 
+    if (damagedPropertyAddress.landlordPhone2) {
+      this.landlordPhone2.setValue(damagedPropertyAddress.landlordPhone2);
+    }
+    this.landlordPhone2.setValidators([customValidator.maskedNumberLengthValidator().bind(customValidator)]);
+
     if (damagedPropertyAddress.landlordEmail) {
       this.landlordEmail.setValue(damagedPropertyAddress.landlordEmail);
     }
     this.landlordEmail.setValidators([Validators.email]);
+
+    if (damagedPropertyAddress.landlordEmail2) {
+      this.landlordEmail2.setValue(damagedPropertyAddress.landlordEmail2);
+    }
+    this.landlordEmail2.setValidators([Validators.email]);
 
     if (damagedPropertyAddress.businessLegalName) {
       this.businessLegalName.setValue(damagedPropertyAddress.businessLegalName);
@@ -266,7 +298,9 @@ export class PropertyDamage {
   landslideDamage?: null | boolean;
   otherDamage?: null | boolean;
   otherDamageText?: null | string;
+  previousApplicationText?: null | string;
   residingInResidence?: null | boolean;
+  previousApplication?: null | string;
   stormDamage?: null | boolean;
   wereYouEvacuated?: null | boolean;
 
@@ -276,12 +310,14 @@ export class PropertyDamage {
     stormDamage?: null | boolean,
     otherDamage?: null | boolean,
     otherDamageText?: null | string,
+    previousApplicationText?: null | string,
     damageFromDate?: null | Date,
     damageToDate?: null | Date,
     briefDescription?: null | string,
     wereYouEvacuated?: null | boolean,
     dateReturned?: null | Date,
     residingInResidence?: null | boolean,
+    previousApplication?: null | string,
   ) {}
 }
 
@@ -291,12 +327,14 @@ export class PropertyDamageForm {
   stormDamage = new UntypedFormControl();
   otherDamage = new UntypedFormControl();
   otherDamageText = new UntypedFormControl();
+  previousApplicationText = new UntypedFormControl();
   damageFromDate = new UntypedFormControl();
   damageToDate = new UntypedFormControl();
   briefDescription = new UntypedFormControl();
   wereYouEvacuated = new UntypedFormControl();
   dateReturned = new UntypedFormControl();
   residingInResidence = new UntypedFormControl();
+  previousApplication = new UntypedFormControl();
 
   constructor(
     propertyDamage: PropertyDamage,
@@ -326,6 +364,13 @@ export class PropertyDamageForm {
       this.otherDamageText.setValue(propertyDamage.otherDamageText);
     }
     this.otherDamageText.setValidators([customValidator
+      .maxLengthValidator(100)
+      .bind(customValidator)]);
+
+    if (propertyDamage.previousApplicationText) {
+      this.previousApplicationText.setValue(propertyDamage.previousApplicationText);
+    }
+    this.previousApplicationText.setValidators([customValidator
       .maxLengthValidator(100)
       .bind(customValidator)]);
 
@@ -361,6 +406,11 @@ export class PropertyDamageForm {
     }
     this.residingInResidence.setValidators(null);
 
+    if (propertyDamage.previousApplication) {
+      this.previousApplication.setValue(propertyDamage.previousApplication);
+    }
+    this.previousApplication.setValidators(null);
+
   }
 }
 
@@ -372,6 +422,7 @@ export class FullTimeOccupant {
   id?: null | string;
   lastName?: string;
   relationship?: string;
+  onlyOccupantInHome?: boolean;
 }
 
 export class FullTimeOccupantsForm {
@@ -384,6 +435,7 @@ export class FullTimeOccupantsForm {
   fullTimeOccupant: UntypedFormGroup;
   fullTimeOccupants = new UntypedFormControl([]);
   addNewFullTimeOccupantIndicator = new UntypedFormControl(false);
+  onlyOccupantInHome = new UntypedFormControl();
 
   constructor(
     fullTimeOccupants: Array<FullTimeOccupant>,
@@ -470,6 +522,7 @@ export class OtherContact {
   id?: null | string;
   lastName?: string;
   phoneNumber?: string;
+  onlyOtherContact?: boolean;
 }
 
 export class OtherContactsForm {
@@ -483,6 +536,7 @@ export class OtherContactsForm {
   addNewOtherContactIndicator = new UntypedFormControl(false);
   otherContact: UntypedFormGroup;
   otherContacts = new UntypedFormControl([], Validators.required);
+  onlyOtherContact = new UntypedFormControl();
 
   constructor(
     otherContacts: Array<OtherContact>,
@@ -2870,4 +2924,6 @@ export interface DfaApplicationMain {
   signAndSubmit?: SignAndSubmit;
   supportingDocuments?: SupportingDocuments;
   deleteFlag?: boolean;
+  onlyOccupantInHome?: boolean;
+  onlyOtherContact?: boolean
 }

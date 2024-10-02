@@ -788,6 +788,29 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         public string? dfa_projectid { get; set; }
         public string? dfa_projectbusinessprocesssubstages { get; set; }
         public string? dfa_bpfclosedate { get; set; }
+        public bool? hasAmendments { get; set; }
+    }
+
+    public class dfa_projectamendment
+    {
+        public string? _dfa_project_value { get; set; }
+        public string? dfa_projectamendmentid { get; set; }
+        public string? dfa_amendmentnumber { get; set; }
+        public string? dfa_amendmentreceiveddate { get; set; }
+        public string? dfa_amendmentreason { get; set; }
+        public string? dfa_amendmentapproveddate { get; set; }
+        public string? dfa_emcrapprovalcomments { get; set; }
+        public bool dfa_requestforprojectdeadlineextension { get; set; }
+        public string? dfa_amendedprojectdeadlinedate { get; set; }
+        public bool dfa_deadlineextensionapproved { get; set; }
+        public string? dfa_amended18monthdeadline { get; set; }
+        public bool dfa_requestforadditionalprojectcost { get; set; }
+        public string? dfa_estimatedadditionalprojectcost { get; set; }
+        public string? dfa_additionalprojectcostdecision { get; set; }
+        public string? dfa_approvedadditionalprojectcost { get; set; }
+        public string? dfa_amendmentstages { get; set; }
+        public string? dfa_amendmentsubstages { get; set; }
+        public DateTime createdon { get; set; }
     }
 
     public enum EventType
@@ -878,6 +901,72 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
 
         [Description("Withdrawn")]
         Withdrawn = 222710007,
+
+        [Description("Approved with Exclusions")]
+        ApprovedwithExclusions = 222710008,
+    }
+
+    public enum ProjectAmendmentStages
+    {
+        [Description("Created")]
+        Created = 222710000,
+
+        [Description("Under Review")]
+        UnderReview = 222710001,
+
+        [Description("Approval Pending")]
+        ApprovalPending = 222710002,
+
+        [Description("Decision Made")]
+        DecisionMade = 222710007,
+
+        [Description("Closed")]
+        Closed = 222710008
+    }
+
+    public enum ProjectAmendmentSubStages
+    {
+        [Description("Pending")]
+        Pending = 222710000,
+
+        [Description("Received")]
+        Received = 222710001,
+
+        [Description("In Progress")]
+        InProgress = 222710002,
+
+        [Description("Assign to Evaluator")]
+        AssigntoEvaluator = 222710003,
+
+        [Description("Additional info. Required")]
+        AdditionalinfoRequired = 222710005,
+
+        [Description("Approved")]
+        Approved = 222710006,
+
+        [Description("Ineligible")]
+        Ineligible = 222710008,
+
+        [Description("Withdrawn")]
+        Withdrawn = 222710004,
+
+        [Description("Approved with Exclusions")]
+        ApprovedwithExclusions = 222710007,
+    }
+
+    public enum ProjectAmendmentAdditionalProjectCostDecision
+    {
+        [Description("Approved")]
+        Approved = 222710000,
+
+        [Description("Approved with Exclusions")]
+        ApprovedwithExclusions = 222710001,
+
+        [Description("Ineligible")]
+        Ineligible = 222710002,
+
+        [Description("Withdrawn")]
+        Withdrawn = 222710003,
     }
 
     public enum ClaimStages

@@ -20,10 +20,9 @@
         <div class="col-md-2 button-column">
           <button
             class="application-button"
-            *ngIf="applItem.currentApplication !== false"
+            *ngIf="applItem.isProjectSubmission"
             (click)="ViewProjects(applItem)"
             type="button" >
-            <!--*ngIf="applItem.stage == 'Approved'"-->
       
             Submit Projects
           </button>

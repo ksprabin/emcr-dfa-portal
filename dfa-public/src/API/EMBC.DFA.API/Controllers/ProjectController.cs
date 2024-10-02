@@ -60,88 +60,6 @@ namespace EMBC.DFA.API.Controllers
             //var profileId = profile.Id;
             var lstProjects = await handler.HandleProjectList(applicationId);
 
-            //var lstProjects = new List<CurrentProject>()
-            //{
-            //    new CurrentProject()
-            //    {
-            //        ProjectId = "a75d9eed-2e24-ef11-b850-00505683fbf4",
-            //        ProjectName = "Damaged pond",
-            //        ProjectNumber = "1.0",
-            //        SiteLocation = "1700 Block Fir Street",
-            //        EstimatedCompletionDate = "2025-03-06T07:00:00.0000000Z",
-            //        Deadline18Month = "2025-07-12T07:00:00.0000000Z",
-            //        EMCRApprovedAmount = "(pending claim information)",
-            //        Status = "Submitted",
-            //        Stage = "Pending",
-            //        CreatedDate = "2024-03-06T07:00:00.0000000Z"
-            //    },
-            //    new CurrentProject()
-            //    {
-            //        ProjectId = "2",
-            //        ProjectName = "Overland flooding - Road",
-            //        ProjectNumber = "2.0",
-            //        SiteLocation = "145 Block Fir Street",
-            //        EstimatedCompletionDate = "2025-01-06T07:00:00.0000000Z",
-            //        Deadline18Month = "2025-11-22T07:00:00.0000000Z",
-            //        EMCRApprovedAmount = "(pending claim information)",
-            //        Status = "Decision Made",
-            //        Stage = "Approved",
-            //        CreatedDate = "2024-01-06T07:00:00.0000000Z"
-            //    },
-            //    new CurrentProject()
-            //    {
-            //        ProjectId = "3",
-            //        ProjectName = "Overland flooding - Road",
-            //        ProjectNumber = "3.0",
-            //        SiteLocation = "2200 Block Fir Street",
-            //        EstimatedCompletionDate = "2024-12-06T07:00:00.0000000Z",
-            //        Deadline18Month = "2025-11-06T07:00:00.0000000Z",
-            //        EMCRApprovedAmount = "(pending claim information)",
-            //        Status = "Decision Made",
-            //        Stage = "Ineligible",
-            //        CreatedDate = "2023-11-06T07:00:00.0000000Z"
-            //    },
-            //    new CurrentProject()
-            //    {
-            //        ProjectId = "4",
-            //        ProjectName = "Storm damage",
-            //        ProjectNumber = "4.0",
-            //        SiteLocation = "334 Block Fir Street",
-            //        EstimatedCompletionDate = "2024-08-06T07:00:00.0000000Z",
-            //        Deadline18Month = "2025-08-06T07:00:00.0000000Z",
-            //        EMCRApprovedAmount = "(pending claim information)",
-            //        Status = "Approval Pending",
-            //        Stage = "In Progress",
-            //        CreatedDate = "2024-02-06T07:00:00.0000000Z"
-            //    },
-            //    new CurrentProject()
-            //    {
-            //        ProjectId = "5",
-            //        ProjectName = "Storm damage",
-            //        ProjectNumber = "5.0",
-            //        SiteLocation = "654 Block Fir Street",
-            //        EstimatedCompletionDate = "2024-11-06T07:00:00.0000000Z",
-            //        Deadline18Month = "2025-06-06T07:00:00.0000000Z",
-            //        EMCRApprovedAmount = "(pending claim information)",
-            //        Status = "Draft",
-            //        Stage = string.Empty,
-            //        CreatedDate = "2024-05-23T07:00:00.0000000Z"
-            //    },
-            //    new CurrentProject()
-            //    {
-            //        ProjectId = "6",
-            //        ProjectName = "Overland flooding - Road",
-            //        ProjectNumber = "6.0",
-            //        SiteLocation = "403 Block Fir Street",
-            //        EstimatedCompletionDate = "2024-05-06T07:00:00.0000000Z",
-            //        Deadline18Month = "2025-10-06T07:00:00.0000000Z",
-            //        EMCRApprovedAmount = "(pending claim information)",
-            //        Status = "Decision Made",
-            //        Stage = "Ineligible",
-            //        CreatedDate = "2024-04-06T07:00:00.0000000Z"
-            //    },
-            //};
-
             return Ok(lstProjects);
         }
 
@@ -203,6 +121,20 @@ namespace EMBC.DFA.API.Controllers
             return Ok(objProject);
         }
 
+        /// <summary>
+        /// get dfa project amendments
+        /// </summary>
+        /// <param name="projectId">The project Id.</param>
+        /// <returns>list of project amendments</returns>
+        [HttpGet("dfaprojectamendments")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<CurrentProjectAmendment>>> GetDFAProjectAmendments(string projectId)
+        {
+            var lstProjectAmendments = await handler.HandleProjectAmendmentList(projectId);
+
+            return Ok(lstProjectAmendments);
+        }
+
         public static string GetEnumDescription(System.Enum value)
         {
             FieldInfo fi = value.GetType().GetField(value.ToString());
@@ -216,6 +148,32 @@ namespace EMBC.DFA.API.Controllers
 
             return value.ToString();
         }
+    }
+
+    public class CurrentProjectAmendment
+    {
+        public string ProjectId { get; set; }
+        public string AmendmentNumber { get; set; }
+        public string AmendmentReceivedDate { get; set; }
+        public string AmendmentReason { get; set; }
+        public string AmendmentApprovedDate { get; set; }
+        public string EMCRDecisionComments { get; set; }
+        public string RequestforProjectDeadlineExtention { get; set; }
+        public string AmendedProjectDeadlineDate { get; set; }
+        public string DeadlineExtensionApproved { get; set; }
+        public string Amended18MonthDeadline { get; set; }
+        public string RequestforAdditionalProjectCost { get; set; }
+        public string EstimatedAdditionalProjectCost { get; set; }
+        public string AdditionalProjectCostDecision { get; set; }
+        public string ApprovedAdditionalProjectCost { get; set; }
+        public string AmendmentId { get; set; }
+        public string Status { get; set; }
+        public string Stage { get; set; }
+        public List<ProjectStatusBar> StatusBar { get; set; }
+        public string StatusLastUpdated { get; set; }
+        public bool IsErrorInStatus { get; set; }
+        public bool IsHidden { get; set; } = true;
+        public string StatusColor { get; set; }
     }
 
     public class CurrentProject
@@ -237,6 +195,8 @@ namespace EMBC.DFA.API.Controllers
         public bool IsHidden { get; set; } = true;
         public string StatusColor { get; set; }
         public string DateFileClosed { get; set; }
+        public bool IsClaimSubmission { get; set; }
+        public bool HasAmendment { get; set; }
     }
 
     public class ProjectStatusBar

@@ -331,9 +331,13 @@ namespace EMBC.DFA.API.Controllers
         public bool? manufacturedHome { get; set; }
         public bool? eligibleForHomeOwnerGrant { get; set; }
         public string? landlordGivenNames { get; set; }
+        public string? landlordGivenNames2 { get; set; }
         public string? landlordSurname { get; set; }
+        public string? landlordSurname2 { get; set; }
         public string? landlordPhone { get; set; }
+        public string? landlordPhone2 { get; set; }
         public string? landlordEmail { get; set; }
+        public string? landlordEmail2 { get; set; }
         public bool? isPrimaryAndDamagedAddressSame { get; set; }
         public string? businessLegalName { get; set; }
         public bool? businessManagedByAllOwnersOnDayToDayBasis { get; set; }
@@ -359,12 +363,14 @@ namespace EMBC.DFA.API.Controllers
         public bool? stormDamage { get; set; }
         public bool? otherDamage { get; set; }
         public string? otherDamageText { get; set; }
+        public string? previousApplicationText { get; set; }
         public string? damageFromDate { get; set; }
         public string? damageToDate { get; set; }
         public string? briefDescription { get; set; }
         public bool? wereYouEvacuated { get; set; }
         public string? dateReturned { get; set; }
         public bool? residingInResidence { get; set; }
+        public string? previousApplication { get; set; }
     }
 
     /// <summary>

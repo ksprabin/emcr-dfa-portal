@@ -1,4 +1,4 @@
-<mat-card class="card-align">
+<mat-card appearance="outlined" class="card-align">
   <mat-card-content>
     <p>
       Your telephone and email address will ONLY be used to contact you about your post-disaster circumstances to determine your eligibility for disaster financial assistance and to exchange information between the Ministry of Emergency Management and Climate Readiness (or its agent) and Provincial Government Ministries and Crown Corporations, to receive
@@ -22,9 +22,8 @@ information and to verify that the information provided by you is accurate.
                 formControlName="cellPhoneNumber"
                 matInput
                 placeholder="Cellular Telephone Number"
-                [textMask]="{ mask: phoneMask, keepCharPositions: true }"
                 required
-              />
+                [imask]="phoneMask" />
               <mat-error
                 *ngIf="
                   contactFormControl.cellPhoneNumber.invalid &&
@@ -55,8 +54,8 @@ information and to verify that the information provided by you is accurate.
                 formControlName="residencePhone"
                 matInput
                 placeholder="Residence Telephone Number"
-                [textMask]="{ mask: phoneMask, keepCharPositions: true }"
-              />
+                [imask]="phoneMask" />
+              
               <mat-error
                 *ngIf="
                   contactFormControl.residencePhone.invalid &&
@@ -71,8 +70,7 @@ information and to verify that the information provided by you is accurate.
                 formControlName="alternatePhone"
                 matInput
                 placeholder="Alternate Telephone Number"
-                [textMask]="{ mask: phoneMask, keepCharPositions: true }"
-              />
+                [imask]="phoneMask" />
               <mat-error
                 *ngIf="
                   contactFormControl.alternatePhone.invalid &&

@@ -17,7 +17,7 @@
   <div class="col-12 content-container" >
     <div class="row">
         <div class="col-md-6">
-          <span class="page-subheadbold">This page is for homeowners, residential tenants, small businesses, farms, and charitable organizations.</span><br />
+          <span class="page-subheadbold">This page is for homeowners, residential tenants, small businesses, farms, and charitable/non-profit organizations.</span><br />
 If you're an Indigenous community or local government your process is different: <a target="_blank" href="https://www2.gov.bc.ca/gov/content/safety/emergency-management/local-emergency-programs/financial/communities-dfa">DFA for community recovery.</a>
         </div>
       <div class="col-md-6"></div>
@@ -47,7 +47,7 @@ If you're an Indigenous community or local government your process is different:
     <div class="container" style="padding-bottom: 100px; padding-top: 30px;">
       <!--<app-alert></app-alert>-->
 
-      <nav mat-tab-nav-bar dynamicHeight>
+      <nav mat-tab-nav-bar [tabPanel]="tabPanel" dynamicHeight>
         <a
           mat-tab-link
           *ngFor="let tabItem of tabs"
@@ -71,7 +71,10 @@ If you're an Indigenous community or local government your process is different:
           &nbsp;&nbsp; {{ tabItem.label != "Profile" ? tabItem.label + " (" + tabItem.count + ")" : tabItem.label }}
         </a>
       </nav>
-      <router-outlet></router-outlet>
+      <mat-tab-nav-panel #tabPanel>
+        <router-outlet></router-outlet>
+      </mat-tab-nav-panel>
+      
       <app-loader
         class="spinner"
         [showLoader]="isLoading"

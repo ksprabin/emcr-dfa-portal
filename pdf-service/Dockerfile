@@ -28,7 +28,7 @@ ARG VERSION
 ENV VERSION=$VERSION
 USER 0
 RUN /bin/sh -c "cd /opt     \
-    && INSTALL_PKGS=" xorg-x11-fonts-Type1 libpng libpng-devel libjpeg-turbo libjpeg-turbo-devel libX11 libXext libXrender xorg-x11-fonts-Type1 fontconfig psmisc"     \
+    && INSTALL_PKGS=" xorg-x11-fonts-Type1 libpng libpng-devel libjpeg-turbo libjpeg-turbo-devel libX11 libXext libXrender xorg-x11-fonts-Type1 fontconfig psmisc libjpeg62"     \
     && yum --disableplugin=subscription-manager --enablerepo=ubi-8-appstream,ubi-8-baseos,ubi-8-codeready-builder install -y $INSTALL_PKGS     \
     && yum -y install http://mirror.centos.org/centos/8-stream/AppStream/x86_64/os/Packages/xorg-x11-fonts-75dpi-7.5-19.el8.noarch.rpm     \
     && rpm -V $INSTALL_PKGS     \

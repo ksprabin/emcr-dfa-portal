@@ -34,13 +34,14 @@
 }
 
 .appDetailHeader {
-  background: #F6F9FC 0% 0% no-repeat padding-box;
+  /*background: #F6F9FC 0% 0% no-repeat padding-box;*/
   padding: 25px;
   margin-top: 10px;
-  -webkit-box-shadow: 3px 0 5px #003366;
+  /*-webkit-box-shadow: 3px 0 5px #003366;
   -moz-box-shadow: 3px 0 5px #003366;
-  box-shadow: 3px 0 5px #003366;
+  box-shadow: 3px 0 5px #003366;*/
   line-height: 25px;
+  border: 1px solid lightgray;
 }
 
 .infoIconStyle {

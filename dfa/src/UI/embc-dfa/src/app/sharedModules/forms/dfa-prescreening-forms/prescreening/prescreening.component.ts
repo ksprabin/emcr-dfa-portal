@@ -345,11 +345,15 @@ export default class PrescreeningComponent implements OnInit, OnDestroy {
 
     // check for date of damage between start date and end date
     this.openDisasterEvents.forEach(disasterEvent => {
-      if (new Date(new Date(disasterEvent.endDate).toDateString()) >= this.prescreeningForm.controls.damageFromDate.value &&
-        new Date(new Date(disasterEvent.startDate).toDateString()) <= this.prescreeningForm.controls.damageFromDate.value) {
+      const damageFromDate = new Date(this.prescreeningForm.controls.damageFromDate.value);
+      const eventStartDate = new Date(new Date(disasterEvent.startDate).toDateString());
+      const eventEndDate = new Date(new Date(disasterEvent.endDate).toDateString());
+      if (eventEndDate >= damageFromDate && eventStartDate <= damageFromDate) {
         disasterEvent.matchDate = true;
-      } else disasterEvent.matchDate = false;
-    })
+      } else {
+        disasterEvent.matchDate = false;
+      }
+    });
 
     // Matching Events to display
     this.matchingEventsData = this.openDisasterEvents.filter(disasterEvent => disasterEvent.matchArea == true && disasterEvent.matchDate == true);

@@ -26,12 +26,13 @@ import { DFAEligibilityDialogComponent } from 'src/app/core/components/dialog-co
 import { MatDialog } from '@angular/material/dialog';
 import { Profile, ApplicantOption, Address } from 'src/app/core/api/models';
 import { DFAApplicationMainDataService } from 'src/app/feature-components/dfa-application-main/dfa-application-main-data.service';
-import { TextMaskModule } from 'angular2-text-mask';
+
 import { MatInputModule } from '@angular/material/input';
 import { ApplicationService, ProfileService } from 'src/app/core/api/services';
 import { DFAApplicationMainMappingService } from 'src/app/feature-components/dfa-application-main/dfa-application-main-mapping.service';
 import { DialogContent } from 'src/app/core/model/dialog-content.model';
 import { AddressChangeComponent } from 'src/app/core/components/dialog-components/address-change-dialog/address-change-dialog.component';
+import { IMaskModule } from 'angular-imask';
 
 
 @Component({
@@ -46,20 +47,7 @@ export default class DamagedPropertyAddressComponent implements OnInit, OnDestro
   formCreationService: FormCreationService;
   private _profileAddress: Address;
   public ApplicantOptions = ApplicantOption;
-  readonly phoneMask = [
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    '-',
-    /\d/,
-    /\d/,
-    /\d/,
-    /\d/
-  ];
+  readonly phoneMask = "000-000-0000";
   isResidentialTenant: boolean = false;
   isHomeowner: boolean = false;
   isSmallBusinessOwner: boolean = false;
@@ -213,8 +201,8 @@ export default class DamagedPropertyAddressComponent implements OnInit, OnDestro
             this.damagedPropertyAddressForm.controls.charityExistsAtLeast12Months.setValidators([Validators.required]);
             this.damagedPropertyAddressForm.controls.charityRegistered.setValidators([Validators.required]);
             this.damagedPropertyAddressForm.controls.charityProvidesCommunityBenefit.setValidators([Validators.required]);
-            this.accountLegalNameLabel = "charitable organization's"
-            this.accountPlaceHolderLabel = "Charitable Organization";
+            this.accountLegalNameLabel = "charitable/non-profit organization's"
+            this.accountPlaceHolderLabel = "Charitable/Non-profit Organization";
           }
         this.damagedPropertyAddressForm.updateValueAndValidity();
         }
@@ -517,9 +505,13 @@ export default class DamagedPropertyAddressComponent implements OnInit, OnDestro
           this.dfaApplicationMainDataService.damagedPropertyAddress.community = this.damagedPropertyAddressForm.get('community').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.firstNationsReserve = this.damagedPropertyAddressForm.get('firstNationsReserve').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.landlordEmail = this.damagedPropertyAddressForm.get('landlordEmail').value;
+          this.dfaApplicationMainDataService.damagedPropertyAddress.landlordEmail2 = this.damagedPropertyAddressForm.get('landlordEmail2').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.landlordGivenNames = this.damagedPropertyAddressForm.get('landlordGivenNames').value;
+          this.dfaApplicationMainDataService.damagedPropertyAddress.landlordGivenNames2 = this.damagedPropertyAddressForm.get('landlordGivenNames2').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.landlordPhone = this.damagedPropertyAddressForm.get('landlordPhone').value;
+          this.dfaApplicationMainDataService.damagedPropertyAddress.landlordPhone2 = this.damagedPropertyAddressForm.get('landlordPhone2').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.landlordSurname = this.damagedPropertyAddressForm.get('landlordSurname').value;
+          this.dfaApplicationMainDataService.damagedPropertyAddress.landlordSurname2 = this.damagedPropertyAddressForm.get('landlordSurname2').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.postalCode = this.damagedPropertyAddressForm.get('postalCode').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.stateProvince = this.damagedPropertyAddressForm.get('stateProvince').value;
           this.dfaApplicationMainDataService.damagedPropertyAddress.eligibleForHomeOwnerGrant = this.damagedPropertyAddressForm.get('eligibleForHomeOwnerGrant').value == 'true' ? true : (this.damagedPropertyAddressForm.get('eligibleForHomeOwnerGrant').value == 'false' ? false : null);
@@ -618,7 +610,7 @@ export default class DamagedPropertyAddressComponent implements OnInit, OnDestro
     FormsModule,
     MatCardModule,
     MatFormFieldModule,
-    TextMaskModule,
+    IMaskModule,
     MatRadioModule,
     MatInputModule,
     MatButtonModule,

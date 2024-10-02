@@ -1,4 +1,4 @@
-<mat-card class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
+<mat-card appearance="outlined" class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
   <mat-card-content>
 
     <p class="sub-heading" style="font-size: 20px">Application Type & Insurance</p>
@@ -58,9 +58,7 @@
                       </ul>
                     </div>
                     <div class="sub-heading radio-extra-label col-md-6" *ngIf="appTypeInsuranceForm.get('applicantOption').value === option.key && option.value === radioApplicantOptions.SmallBusinessOwner">
-                      <br/>
-                      <mat-label class="sub-heading">What type of small business?<span style="color:red" >*</span></mat-label>
-                      <br />
+                      <mat-label class="sub-heading" style="padding-left: 8px;">What type of small business?<span style="color:red" >*</span></mat-label>
                       <mat-radio-group
                         formControlName="smallBusinessOption"
                         class="primary-radio-group"
@@ -208,7 +206,7 @@
                     </div>
                     <div class="sub-heading radio-extra-label col-md-6" *ngIf="appTypeInsuranceForm.get('applicantOption').value === option.key && option.value === radioApplicantOptions.CharitableOrganization">
                       <br/>
-                      Your charitable organization must:
+                      Your charitable/non-profit organization must:
                       <ul>
                         <li>provide a benefit or service to the community,</li>
                         <li>have been in existence for at least 12 months, and</li>

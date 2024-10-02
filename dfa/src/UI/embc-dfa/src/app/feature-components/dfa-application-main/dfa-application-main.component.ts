@@ -18,7 +18,7 @@ import { FormCreationService } from '../../core/services/formCreation.service';
 import { AlertService } from 'src/app/core/services/alert.service';
 import { DFAApplicationMainDataService } from './dfa-application-main-data.service';
 import { DFAApplicationMainService } from './dfa-application-main.service';
-import { ApplicantOption, FarmOption, SmallBusinessOption } from 'src/app/core/api/models';
+import { ApplicantOption, FarmOption, InsuranceOption, SmallBusinessOption } from 'src/app/core/api/models';
 import { ApplicationService, AttachmentService } from 'src/app/core/api/services';
 import { MatDialog } from '@angular/material/dialog';
 import { DFAConfirmSubmitDialogComponent } from 'src/app/core/components/dialog-components/dfa-confirm-submit-dialog/dfa-confirm-submit-dialog.component';
@@ -59,6 +59,7 @@ export class DFAApplicationMainComponent
   vieworedit: string;
   editstep: string;
   ninetyDayDeadline: string;
+  event: string;
   daysToApply: number;
   isResidentialTenant: boolean = false;
   isGeneral: boolean = false;
@@ -72,7 +73,8 @@ export class DFAApplicationMainComponent
   SmallBusinessOptions = SmallBusinessOption;
   FarmOptions = FarmOption;
   signAndSubmitForm: UntypedFormGroup;
-
+  InsuranceOptions = InsuranceOption;
+  isNoInsurance: boolean = false;
   constructor(
     private router: Router,
     private componentService: ComponentCreationService,
@@ -96,6 +98,7 @@ export class DFAApplicationMainComponent
 
     this.dfaApplicationMainDataService.getDfaApplicationStart().subscribe(application => {
       if (application) {
+        this.isNoInsurance = (application.appTypeInsurance.insuranceOption == Object.keys(this.InsuranceOptions)[Object.values(this.InsuranceOptions).indexOf(this.InsuranceOptions.No)]);
         this.isResidentialTenant = (application.appTypeInsurance.applicantOption == Object.keys(this.AppOptions)[Object.values(this.AppOptions).indexOf(this.AppOptions.ResidentialTenant)]);
         this.isHomeowner = (application.appTypeInsurance.applicantOption == Object.keys(this.AppOptions)[Object.values(this.AppOptions).indexOf(this.AppOptions.Homeowner)]);
         this.isSmallBusinessOwner = (application.appTypeInsurance.applicantOption == Object.keys(this.AppOptions)[Object.values(this.AppOptions).indexOf(this.AppOptions.SmallBusinessOwner)]);
@@ -170,6 +173,7 @@ export class DFAApplicationMainComponent
 
     this.dfaApplicationMainDataService.getDfaApplicationStart().subscribe(application => {
       if (application) {
+        this.event = application.eventName;
         if (application.id == applicationId) this.getFileUploadsForApplication(applicationId);
         this.dfaApplicationMainHeading = ApplicantOption[application.appTypeInsurance.applicantOption] + ' Application';
         this.appTypeInsuranceForm.controls.applicantOption.setValue(application.appTypeInsurance.applicantOption);
@@ -205,6 +209,7 @@ export class DFAApplicationMainComponent
           }
           this.checkSignaturesValid();
         });
+
   }
 
 
@@ -277,7 +282,11 @@ export class DFAApplicationMainComponent
           this.ninetyDayDeadline = value;
           let date = new Date(value);
           let currentDate = new Date();
-          this.daysToApply = Math.floor((date.getTime() - currentDate.getTime()) / 1000 / 60 / 60 / 24);
+          const eventDate = new Date(date.toDateString());
+          const currentDateOnly = new Date(currentDate.toDateString());
+          const dateDifferenceInMs = eventDate.getTime() - currentDateOnly.getTime();
+          const differenceInDays = Math.floor(dateDifferenceInMs / (1000 * 60 * 60 * 24));
+          this.daysToApply = differenceInDays + 1;
         }
       })
   }
@@ -340,6 +349,9 @@ export class DFAApplicationMainComponent
 
         // determine if step is complete
         switch (component) {
+          case 'application-details':
+            stepper.selected.completed = true;
+            break;
           case 'damaged-property-address':
             if (this.form.valid) stepper.selected.completed = true;
             else stepper.selected.completed = false;
@@ -395,8 +407,7 @@ export class DFAApplicationMainComponent
     let isDirectorsListingUploaded = this.formCreationService.fileUploadsForm.getValue().getRawValue()?.fileUploads.filter(x => x.requiredDocumentType === "DirectorsListing" && x.deleteFlag == false).length >= 1 ? true : false;
     let isRegistrationProofUploaded = this.formCreationService.fileUploadsForm.getValue().getRawValue()?.fileUploads.filter(x => x.requiredDocumentType === "RegistrationProof" && x.deleteFlag == false).length >= 1 ? true : false;
     let isStructureAndPurposeUploaded = this.formCreationService.fileUploadsForm.getValue().getRawValue()?.fileUploads.filter(x => x.requiredDocumentType === "StructureAndPurpose" && x.deleteFlag == false).length >= 1 ? true : false;
-
-    if (isInsuranceTemplateUploaded == true
+    if ((this.isNoInsurance == false ? isInsuranceTemplateUploaded == true : true)
       && (this.isResidentialTenant == true ? (isIdentificationUploaded == true && isTenancyProofUploaded == true) : true)
       && ((this.isSmallBusinessOwner == true  && this.isGeneral == true) ? (isT1GeneralIncomeTaxReturnUploaded == true && isFinancialStatementsUploaded == true) : true )
       && ((this.isSmallBusinessOwner == true  && this.isCorporate == true) ? (isT2CorporateIncomeTaxReturnUploaded == true && isFinancialStatementsUploaded == true && isProofOfOwnershipUploaded) : true )
@@ -421,9 +432,13 @@ export class DFAApplicationMainComponent
         this.dfaApplicationMainDataService.damagedPropertyAddress.community = this.form.get('community').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.firstNationsReserve = this.form.get('firstNationsReserve').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.landlordEmail = this.form.get('landlordEmail').value;
+        this.dfaApplicationMainDataService.damagedPropertyAddress.landlordEmail2 = this.form.get('landlordEmail2').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.landlordGivenNames = this.form.get('landlordGivenNames').value;
+        this.dfaApplicationMainDataService.damagedPropertyAddress.landlordGivenNames2 = this.form.get('landlordGivenNames2').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.landlordPhone = this.form.get('landlordPhone').value;
+        this.dfaApplicationMainDataService.damagedPropertyAddress.landlordPhone2 = this.form.get('landlordPhone2').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.landlordSurname = this.form.get('landlordSurname').value;
+        this.dfaApplicationMainDataService.damagedPropertyAddress.landlordSurname2 = this.form.get('landlordSurname2').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.postalCode = this.form.get('postalCode').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.stateProvince = this.form.get('stateProvince').value;
         this.dfaApplicationMainDataService.damagedPropertyAddress.eligibleForHomeOwnerGrant = this.form.get('eligibleForHomeOwnerGrant').value == 'true' ? true : (this.form.get('eligibleForHomeOwnerGrant').value == 'false' ? false : null);
@@ -445,6 +460,7 @@ export class DFAApplicationMainComponent
         this.dfaApplicationMainDataService.damagedPropertyAddress.isDamagedAddressVerified = this.form.get('isDamagedAddressVerified').value == 'true' ? true : (this.form.get('isDamagedAddressVerified').value == 'false' ? false : null);
         break;
       case 'property-damage':
+        if (!this.dfaApplicationMainDataService.propertyDamage) this.dfaApplicationMainDataService.propertyDamage = {};
         this.dfaApplicationMainDataService.propertyDamage.briefDescription = this.form.get('briefDescription').value;
         this.dfaApplicationMainDataService.propertyDamage.damageFromDate = this.form.get('damageFromDate').value;
         this.dfaApplicationMainDataService.propertyDamage.damageToDate = this.form.get('damageToDate').value;
@@ -453,8 +469,10 @@ export class DFAApplicationMainComponent
         this.dfaApplicationMainDataService.propertyDamage.landslideDamage = this.form.get('landslideDamage').value;
         this.dfaApplicationMainDataService.propertyDamage.otherDamage = this.form.get('otherDamage').value;
         this.dfaApplicationMainDataService.propertyDamage.otherDamageText = this.form.get('otherDamageText').value;
+        this.dfaApplicationMainDataService.propertyDamage.previousApplicationText = this.form.get('previousApplicationText').value;
         this.dfaApplicationMainDataService.propertyDamage.stormDamage = this.form.get('stormDamage').value;
         this.dfaApplicationMainDataService.propertyDamage.residingInResidence = this.form.get('residingInResidence').value == 'true' ? true : (this.form.get('residingInResidence').value == 'false' ? false : null);
+        this.dfaApplicationMainDataService.propertyDamage.previousApplication = this.form.get('previousApplication').value;
         this.dfaApplicationMainDataService.propertyDamage.wereYouEvacuated = this.form.get('wereYouEvacuated').value == 'true' ? true : (this.form.get('wereYouEvacuated').value == 'false' ? false : null);
         break;
       case 'occupants':
@@ -486,33 +504,42 @@ export class DFAApplicationMainComponent
    * @param index Step index
    */
   loadStepForm(index: number): void {
+    console.log('loadStepForm', this.steps);
     switch (index) {
       case 0:
+        this.form$ = this.formCreationService
+          .getApplicationDetailsForm()
+          .subscribe((applicationDetails) => {
+          this.form = applicationDetails;
+          });
+        break; 
+
+      case 1:
         this.form$ = this.formCreationService
           .getDamagedPropertyAddressForm()
           .subscribe((damagedPropertyAddress) => {
             this.form = damagedPropertyAddress;
           });
         break;
-      case 1:
+      case 2:
         this.form$ = this.formCreationService
           .getPropertyDamageForm()
           .subscribe((propertyDamage) => {
             this.form = propertyDamage;
           });
         break;
-      case 2:
-        this.form$ = null;
       case 3:
+        this.form$ = null;
+      case 4:
         this.form$ = this.formCreationService
           .getCleanUpLogForm()
           .subscribe((cleanUpLog) => {
             this.form = cleanUpLog;
           });
         break;
-      case 4:
-        this.form$ = null;
       case 5:
+        this.form$ = null;
+      case 6:
         this.form$ = this.formCreationService
           .getSupportingDocumentsForm()
           .subscribe((supportingDocuments) => {

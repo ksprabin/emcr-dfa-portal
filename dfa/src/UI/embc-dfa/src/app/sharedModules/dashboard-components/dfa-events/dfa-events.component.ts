@@ -36,6 +36,14 @@ export class DfaEventsComponent implements OnInit {
     });
   }
 
+  getRemainingDays(event: DisasterEvent): string {
+    const remainingDays = Number(event.remainingDays) + 1; // Account for today
+    if (remainingDays === 1) {
+      return "Apply by midnight tonight";
+    }
+    return `${remainingDays} days remaining to apply`;
+  }
+
   getEffectedRegionCommunities() {
     this.eligibilityService.eligibilityGetRegionCommunties().subscribe((effectedRegionCommunities: EffectedRegionCommunity[]) => {
       this.effectedRegionCommunities = effectedRegionCommunities;

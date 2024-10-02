@@ -1,4 +1,4 @@
-<mat-card class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
+<mat-card appearance="outlined" class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
   <mat-card-content>
 
     <p class="sub-heading" style="font-size: 20px">Verify Your Profile</p>
@@ -384,10 +384,10 @@
                     maxlength="100"
                     required
                     formControlName="cellPhoneNumber"
-                    [textMask]="{ mask: phoneMask, keepCharPositions: true }"
                     matInput
                     placeholder="Cellular Telephone Number"
-                  />
+                    [imask]="phoneMask"
+                    />
                   <mat-error
                     *ngIf="
                       profileVerificationForm.get('profile.contactDetails.cellPhoneNumber').invalid &&
@@ -417,10 +417,10 @@
                   <input
                     maxlength="100"
                     formControlName="residencePhone"
-                    [textMask]="{ mask: phoneMask, keepCharPositions: true }"
                     matInput
                     placeholder="Residence Telephone Number"
-                  />
+                    [imask]="phoneMask"
+                    />
                   <mat-error
                     *ngIf="
                       profileVerificationForm.get('profile.contactDetails.residencePhone').invalid &&
@@ -449,10 +449,10 @@
                   <input
                     maxlength="100"
                     formControlName="alternatePhone"
-                    [textMask]="{ mask: phoneMask, keepCharPositions: true }"
                     matInput
                     placeholder="Alternate Telephone Number"
-                  />
+                    [imask]="phoneMask"
+                    />
                   <mat-error
                     *ngIf="
                       profileVerificationForm.get('profile.contactDetails.alternatePhone').invalid &&

@@ -305,7 +305,7 @@ export class DFAClaimComponent
     this.dfaProjectMainDataService.setProjectId(projId);
     this.dfaProjectMainDataService.setViewOrEdit('view');
 
-    this.router.navigate(['/dfa-project-main/' + projId]);
+    this.router.navigate(['/dfa-project-view/' + projId]);
   }
 
   BackToDashboard() {

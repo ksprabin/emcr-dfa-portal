@@ -16,7 +16,7 @@
       </div>
     </div>
     </div>-->
-    <mat-card class="mat-elevation-z4 content" >
+    <mat-card appearance="outlined" class="mat-elevation-z4 content" >
 
       <div style="border-bottom: 1px solid lightgrey; padding-bottom: 20px; display: flex;">
         <div class="col-md-3">
@@ -67,17 +67,21 @@
       <div class="row" style="padding-top: 20px;">
         <div class="col-md-3">
           <span><b>Application Type</b></span><br />
-          <span>{{applItem.applicationType}}</span>
+          <span>{{applItem.applicationType}}{{applItem.applicationSubType}}</span>
+        </div>
+        <div class="col-md-2" *ngIf="applItem.legalName">
+          <span><b>Legal Name</b></span><br />
+          <span>{{applItem.legalName}}</span>
         </div>
         <div class="col-md-3">
           <span><b>Damaged Property Address</b></span><br />
           <span>{{applItem.damagedAddress}}</span>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <span><b>Case Number</b></span><br />
           <span>{{applItem.caseNumber == null ? "To Be Assigned" : applItem.caseNumber }}</span>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
           <span><b>Date of Damage</b></span><br />
           <span>{{applItem.dateOfDamage | date : "yyyy/MM/dd"}}</span>
         </div>
@@ -104,8 +108,14 @@
         <button
           class="col-md-2 application-button whitebutton"
           type="button"
-          *ngIf="applItem.primaryApplicantSignedDate && applItem.currentApplication === true"
-          (click)="EditApplication(applItem.applicationId, '3')"
+          *ngIf="applItem.primaryApplicantSignedDate &&
+                applItem.currentApplication === true &&
+                applItem.status.toLowerCase() !== 'assessing damage' &&
+                applItem.status.toLowerCase() !== 'reviewing damage report' &&
+                applItem.status.toLowerCase() !== 'dfa making mecision' &&
+                applItem.status.toLowerCase() !== 'dfa decision made'
+                "
+          (click)="EditApplication(applItem.applicationId, '4')"
         >
           Add to Clean Up Log
         </button>
@@ -113,8 +123,14 @@
         <button
           class="col-md-2 application-button whitebutton"
           type="button"
-          *ngIf="applItem.primaryApplicantSignedDate && applItem.currentApplication === true"
-          (click)="EditApplication(applItem.applicationId, '4')"
+          *ngIf="applItem.primaryApplicantSignedDate &&
+                applItem.currentApplication === true &&
+                applItem.status.toLowerCase() !== 'assessing damage' &&
+                applItem.status.toLowerCase() !== 'reviewing damage report' &&
+                applItem.status.toLowerCase() !== 'dfa making mecision' &&
+                applItem.status.toLowerCase() !== 'dfa decision made'
+                "
+          (click)="EditApplication(applItem.applicationId, '5')"
         >
           Add to Damaged Items
         </button>
@@ -122,8 +138,14 @@
         <button
           class="col-md-2 application-button whitebutton"
           type="button"
-          *ngIf="applItem.primaryApplicantSignedDate && applItem.currentApplication === true"
-          (click)="EditApplication(applItem.applicationId, '5')"
+          *ngIf="applItem.primaryApplicantSignedDate &&
+                applItem.currentApplication === true &&
+                applItem.status.toLowerCase() !== 'assessing damage' &&
+                applItem.status.toLowerCase() !== 'reviewing damage report' &&
+                applItem.status.toLowerCase() !== 'dfa making mecision' &&
+                applItem.status.toLowerCase() !== 'dfa decision made'
+                "
+          (click)="EditApplication(applItem.applicationId, '6')"
         >
           Add Supporting Docs
         </button>
@@ -132,7 +154,7 @@
           class="col-md-2 application-button whitebutton"
           type="button"
           *ngIf="applItem.primaryApplicantSignedDate && applItem.currentApplication === true"
-          (click)="EditApplication(applItem.applicationId, '2')"
+          (click)="EditApplication(applItem.applicationId, '3')"
         >
           Add Other Contacts
         </button>

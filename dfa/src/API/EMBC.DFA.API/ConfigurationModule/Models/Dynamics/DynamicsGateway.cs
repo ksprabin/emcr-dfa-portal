@@ -206,6 +206,22 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                 Filter = $"dfa_appapplicationid eq {applicationId}"
             });
 
+            var application = list.List.FirstOrDefault();
+
+            if (application._dfa_eventid_value != null)
+            {
+                var eventlist = await api.GetList<dfa_event>("dfa_events", new CRMGetListOptions
+                {
+                    Select = new[]
+                    {
+                            "dfa_eventid", "dfa_90daydeadlinenew", "dfa_eventname"
+                    },
+                    Filter = $"dfa_eventid eq {application._dfa_eventid_value}"
+                });
+
+                application.dfa_eventname = eventlist.List.Last()?.dfa_eventname;
+            }
+
             //list.List.FirstOrDefault().dfa_farmtype = (int)FarmOptionSet.General; // TODO: replace this with actual retrieve
             //list.List.FirstOrDefault().dfa_smallbusinesstype = (int)SmallBusinessOptionSet.General; // TODO: replace this with actual retrieve
 
@@ -233,7 +249,9 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                     "dfa_grossrevenues100002000000beforedisaster", "dfa_employlessthan50employeesatanyonetime",
                     "dfa_ownedandoperatedbya", "dfa_farmoperation", "dfa_farmoperationderivesthatpersonsmajorincom", "createdon", "_dfa_eventid_value",
                     "dfa_charityregistered", "dfa_charityexistsatleast12months", "dfa_charityprovidescommunitybenefit",
-                    "dfa_damagedpropertyaddresscanadapostverified"
+                    "dfa_damagedpropertyaddresscanadapostverified", "dfa_iamtheonlypersoninthehome",
+                    "dfa_idonthaveanothercontact", "dfa_previousdfaapplicationdetails", "dfa_previousdfaapplication",
+                    "_dfa_buildingownerlandlordsecond_value"
                 },
                 Filter = $"dfa_appapplicationid eq {applicationId}"
             });
@@ -255,6 +273,23 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                     application.dfa_contactlastname = buildingOwnerlist.List.Last().dfa_contactlastname;
                     application.dfa_contactphone1 = buildingOwnerlist.List.Last().dfa_contactphone1;
                     application.dfa_contactemail = buildingOwnerlist.List.Last().dfa_contactemail;
+                }
+
+                if (application._dfa_buildingownerlandlordsecond_value != null)
+                {
+                    var buildingOwnerlist = await api.GetList<dfa_appbuildingownerlandlord>("dfa_appbuildingownerlandlords", new CRMGetListOptions
+                    {
+                        Select = new[]
+                        {
+                            "dfa_contactlastname", "dfa_contactphone1", "dfa_contactemail", "dfa_contactfirstname"
+                        },
+                        Filter = $"dfa_appbuildingownerlandlordid eq {application._dfa_buildingownerlandlordsecond_value}"
+                    });
+
+                    application.dfa_contactfirstname2 = buildingOwnerlist.List.Last().dfa_contactfirstname;
+                    application.dfa_contactlastname2 = buildingOwnerlist.List.Last().dfa_contactlastname;
+                    application.dfa_contactphone2 = buildingOwnerlist.List.Last().dfa_contactphone1;
+                    application.dfa_contactemail2 = buildingOwnerlist.List.Last().dfa_contactemail;
                 }
 
                 var annotationList = await api.GetList<annotation>("annotations", new CRMGetListOptions
@@ -284,12 +319,13 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                     {
                         Select = new[]
                         {
-                            "dfa_eventid", "dfa_90daydeadlinenew"
+                            "dfa_eventid", "dfa_90daydeadlinenew", "dfa_eventname"
                         },
                         Filter = $"dfa_eventid eq {application._dfa_eventid_value}"
                     });
 
                     application.dfa_90daydeadline = eventlist.List.Last()?.dfa_90daydeadlinenew;
+                    application.dfa_eventname = eventlist.List.Last()?.dfa_eventname;
                 }
             }
 
@@ -323,7 +359,7 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                         "dfa_appapplicationid", "dfa_applicanttype",
                         "dfa_dateofdamage", "dfa_damagedpropertystreet1", "dfa_damagedpropertycitytext",
                         "_dfa_eventid_value", "_dfa_casecreatedid_value", "dfa_primaryapplicantsigneddate", "createdon",
-                        "dfa_applicationstatusportal"
+                        "dfa_applicationstatusportal", "dfa_farmtype", "dfa_smallbusinesstype", "dfa_accountlegalname"
                     },
                     Filter = $"_dfa_applicant_value eq {profileId}"
                     //Expand = new CRMExpandOptions[]
@@ -354,6 +390,9 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                                    dfa_datefileclosed = objCaseEvent != null ? objCaseEvent.dfa_datefileclosed : null,
                                    dfa_applicationstatusportal = objApp.dfa_applicationstatusportal,
                                    createdon = objApp.createdon,
+                                   dfa_farmtype = objApp.dfa_farmtype,
+                                   dfa_smallbusinesstype = objApp.dfa_smallbusinesstype,
+                                   dfa_accountlegalname = objApp.dfa_accountlegalname,
                                }).AsEnumerable().OrderByDescending(m => DateTime.Parse(m.createdon));
 
                 //from objEvent in lstEvents.List
@@ -731,6 +770,7 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                 });
 
                 var nowDate = DateTime.Now;
+
                 // open events are those active events where the 90 day deadline is now or in the future
                 return lstEvents.List.Where(m => m.dfa_90daydeadlinenew != null
                     && Convert.ToDateTime(m.dfa_90daydeadlinenew) >= nowDate

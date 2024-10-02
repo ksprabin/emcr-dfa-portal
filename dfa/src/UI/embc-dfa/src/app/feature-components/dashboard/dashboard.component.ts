@@ -125,18 +125,31 @@ export class DashboardComponent implements OnInit {
   }
 
   countAppData(lstApp: Object): void {
-    var res = JSON.parse(JSON.stringify(lstApp));
-    let lstApplications = res;
-    this.currentApplicationsCount = 0; this.pastApplicationsCount = 0;
+
+    let lstApplications = JSON.parse(JSON.stringify(lstApp)); 
+  
+    this.currentApplicationsCount = 0;
+    this.pastApplicationsCount = 0;
+  
     lstApplications.forEach(x => {
       if (
         (x.status.toLowerCase() === "dfa decision made"
         || x.status.toLowerCase() === "closed: inactive" || x.status.toLowerCase() === "closed: withdrawn")
         &&
-        (x.dateFileClosed && (this.sixtyOneDaysAgo <= new Date(x.dateFileClosed).getTime()))) {
+        (x.dateFileClosed && (new Date(x.dateFileClosed).getTime() <= this.sixtyOneDaysAgo))) {
           this.pastApplicationsCount++;
-      } else this.currentApplicationsCount++;
-    })
+        } 
+      else if (
+        /* EMBCDFA-1327: Incomplete application with expired event */
+        x.status.toLowerCase() === "closed: inactive" &&
+        x.dateFileClosed == null &&
+        x.primaryApplicantSignedDate == null)
+      {
+        this.pastApplicationsCount++;
+      } else {
+        this.currentApplicationsCount++;
+      }
+    });
   }
 
   navigateToDFAPrescreening(): void {

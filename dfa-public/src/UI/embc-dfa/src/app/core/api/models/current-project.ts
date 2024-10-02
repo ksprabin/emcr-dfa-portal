@@ -8,6 +8,8 @@ export interface CurrentProject {
   deadline18Month?: string;
   emcrApprovedAmount?: string;
   estimatedCompletionDate?: string;
+  hasAmendment?: boolean;
+  isClaimSubmission?: boolean;
   isErrorInStatus?: boolean;
   isHidden?: boolean;
   projectId?: string;

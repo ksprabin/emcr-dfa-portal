@@ -1,4 +1,4 @@
-<mat-card class="card-align" style="border: none;"
+<mat-card appearance="outlined" class="card-align" style="border: none;"
           [class.mat-elevation-z0]="true">
   <mat-card-content>
 
@@ -131,7 +131,7 @@
                 + Add to clean up log
               </button>
 
-              <mat-card *ngIf="showCleanUpWorkForm">
+              <mat-card appearance="outlined" *ngIf="showCleanUpWorkForm" style="padding: 12px;">
                 <p class="sub-heading" style="font-size: 15px">
                   New Clean Up Log
                 </p>
@@ -212,7 +212,7 @@
                       >
                     </mat-form-field>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-4" style="padding-top: 10px;">
                     <mat-form-field appearance="outline">
                       <mat-label>Description</mat-label>
                       <input formControlName="description" matInput placeholder="Description" required maxlength="200" />
@@ -275,7 +275,7 @@
       </div>
   </form>
 
-  <ng-container>
+  <ng-container >
     <div class="row">
       <div class="col-md-8">
         <app-dfa-attachment
@@ -372,7 +372,7 @@
         </table>
 
         <div  *ngIf="cleanUpWorkFileDataSource.data.length > 0">
-          <br /><br/>
+          <br/>
         </div>
         <div  *ngIf="cleanUpWorkFileDataSource.data.length == 0">
           <br />No cleanup photos were added.<br/>

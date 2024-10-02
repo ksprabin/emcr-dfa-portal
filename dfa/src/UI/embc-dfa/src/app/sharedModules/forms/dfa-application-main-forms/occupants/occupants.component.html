@@ -1,4 +1,4 @@
-<mat-card class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
+<mat-card appearance="outlined" class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
   <mat-card-content>
 
     <p class="sub-heading" style="font-size: 20px">Occupants, Secondary Applicants and Contacts</p>
@@ -13,7 +13,11 @@
                 <b>Full-time Occupants<span style="color:red" >*</span></b>
               </p>
               <p>
-                Add yourself and the name(s) of all full-time occupants who lived in your home at the time of the event. Don't include tenants.<span style="color:red" >*</span>
+                Add the names of all full-time occupants who lived in your home at the time of the event. Don't include tenants.<br />
+                If you were the only person living in the home, please indicate here:&nbsp;
+                <mat-checkbox (change)="onChecked($event)" [disabled]="disableOnlyOccupant" [checked]="onlyOccupantInHome" id="onlyOccupantInHome">
+                I am the only person in the home
+                </mat-checkbox>
               </p>
 
               <table mat-table [dataSource]="fullTimeOccupantsDataSource" *ngIf="fullTimeOccupantsDataSource.getValue().length > 0">
@@ -78,7 +82,7 @@
               </div>
 
               <button
-                *ngIf="!showFullTimeOccupantForm && (vieworedit === 'add' || vieworedit === 'update')"
+                *ngIf="!showFullTimeOccupantForm && (vieworedit === 'add' || vieworedit === 'update') && !hideOccupantButton"
                 class="family-button"
                 mat-button
                 type="button"
@@ -87,7 +91,7 @@
                 + Add full-time occupant
               </button>
 
-              <mat-card *ngIf="showFullTimeOccupantForm">
+              <mat-card appearance="outlined" *ngIf="showFullTimeOccupantForm">
                 <p class="sub-heading" style="font-size: 15px">
                   New full time occupant
                 </p>
@@ -300,7 +304,7 @@
                 + Add secondary applicant
               </button>
 
-              <mat-card *ngIf="showSecondaryApplicantForm">
+              <mat-card appearance="outlined" *ngIf="showSecondaryApplicantForm" style="padding: 12px;">
                 <p class="sub-heading" style="font-size: 15px">
                   New secondary applicant
                 </p>
@@ -375,7 +379,8 @@
                       <input formControlName="phoneNumber"
                         matInput required
                         placeholder="Applicant phone"
-                        [textMask]="{ mask: phoneMask, keepCharPositions: true }" />
+                        [imask]="phoneMask"
+                        />
                       <mat-error
                         *ngIf="
                           secondaryApplicantsForm.get('secondaryApplicant').controls.phoneNumber.invalid &&
@@ -475,8 +480,12 @@
                 <b>Other Contact<span style="color:red" >*</span></b>
               </p>
               <p>
-                You must provide the name of one other contact person in case the DFA can't reach you. The Ministry of Emergency Management (EMCR) can't and won't speak with the contact
-                about your application. If you don't have an alternate contact, add your own name and contact details.
+                We recommend that you provide the name of one other contact person in case the DFA can't reach you. The Ministry of Emergency Management (EMCR) can't and won't speak with the contact about your application, but will ask the person to have you contact us.
+                <br />
+                If you don't have an alternate contact, please indicate here:&nbsp;
+                <mat-checkbox (change)="onCheckedNoOtherContact($event)" [disabled]="disableOnlyOtherContact" [checked]="onlyOtherContact" id="onlyOtherContact">
+                I don't have an Other Contact
+                </mat-checkbox>
               </p>
 
               <table mat-table [dataSource]="otherContactsDataSource" *ngIf="otherContactsDataSource.getValue().length > 0">
@@ -518,7 +527,7 @@
                   <td *matCellDef="let element; let index = index" mat-cell>
                     <button
                       class="edit-image"
-                      *ngIf="vieworedit !== 'viewOnly'"
+                      *ngIf="vieworedit !== 'viewOnly' || contactonly === 'contactOnly'"
                       mat-icon-button
                       aria-label="Edit"
                       (click)="editOtherContactsRow(element, index)"
@@ -532,7 +541,7 @@
                     </button>&nbsp;
                     <button
                     class="delete-image"
-                    *ngIf="vieworedit !== 'viewOnly'"
+                    *ngIf="vieworedit !== 'viewOnly' || contactonly === 'contactOnly'"
                     mat-icon-button
                     aria-label="Remove"
                     (click)="confirmDeleteOtherContactRow(index)"
@@ -565,7 +574,8 @@
               </div>
 
               <button
-                *ngIf="!showOtherContactForm && vieworedit !== 'viewOnly'"
+                *ngIf="!showOtherContactForm && vieworedit !== 'viewOnly' && !hideOtherContactButton
+                      || !showOtherContactForm && contactonly === 'contactOnly' && !hideOtherContactButton"
                 class="family-button"
                 mat-button
                 type="button"
@@ -574,7 +584,7 @@
                 + Add Other Contact
               </button>
 
-              <mat-card *ngIf="showOtherContactForm">
+              <mat-card appearance="outlined" *ngIf="showOtherContactForm" style="padding: 12px;">
                 <p class="sub-heading" style="font-size: 15px">
                   {{otherContactText}}
                 </p>
@@ -632,7 +642,7 @@
                         matInput
                         required
                         placeholder="Contact phone"
-                        [textMask]="{ mask: phoneMask, keepCharPositions: true }" />
+                        [imask]="phoneMask"/>
                         <mat-error
                         *ngIf="
                           otherContactsForm.get('otherContact').controls.phoneNumber.invalid &&

@@ -65,4 +65,21 @@
       </div>
     </mat-toolbar-row>
   </mat-toolbar>
+
+  <!--<mat-toolbar class="breadcrumb-toolbar" *ngIf="showBreadcrumb" color="primary">-->
+  <div *ngIf="showBreadcrumb" class="background breadcrumb-toolbar">
+    <div class="container">
+      <span><a  mat-button (click)="breadCrumbMain()">App Dashboard</a></span>
+
+      <span *ngFor="let m of menuHeader; let c = count">
+        <b>&nbsp;/&nbsp;</b>
+        
+        <a *ngIf="m.islink" mat-button (click)="breadCrumb(m, c)" > {{m.label}}
+  </a>
+        <span class="current-page" *ngIf="!m.islink"><b>{{m.label}}</b></span>
+
+      </span>
+    </div>
+  </div>
+  <!--</mat-toolbar>-->
 </header>

@@ -4,7 +4,7 @@
 }
 
 .left-align {
-  float: left;
+  float: left !important;
   padding-left: 15px;
   padding-right: 15px;
   margin-top: 20px;
@@ -35,7 +35,7 @@
   padding-bottom: 20px;
 }
 
-.mat-tab-link {
+.mat-mdc-tab-link {
   /*background-color: rgba(204, 204, 204, 1);*/
   opacity: 1;
 }

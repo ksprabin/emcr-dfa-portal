@@ -1,4 +1,4 @@
-<mat-card class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
+<mat-card appearance="outlined" class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
   <mat-card-content>
 
     <form [formGroup]="damagedRoomsForm">
@@ -100,7 +100,7 @@
                 + Add Room & Items
               </button>
 
-              <mat-card *ngIf="showDamagedRoomForm">
+              <mat-card appearance="outlined" *ngIf="showDamagedRoomForm" style="padding: 12px;">
                 <p class="sub-heading" style="font-size: 15px">
                   New room and items
                 </p>

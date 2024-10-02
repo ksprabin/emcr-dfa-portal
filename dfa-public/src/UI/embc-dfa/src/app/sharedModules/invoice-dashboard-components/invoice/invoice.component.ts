@@ -262,7 +262,7 @@ export class DfaDashInvoiceComponent implements OnInit {
       this.dFAProjectMainDataService.setViewOrEdit('viewOnly');
     }
 
-    this.router.navigate(['/dfa-project-main/'+applItem.projectId]);
+    this.router.navigate(['/dfa-project-view/'+applItem.projectId]);
   }
 
 }

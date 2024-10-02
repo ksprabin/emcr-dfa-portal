@@ -4,7 +4,7 @@ import { first } from 'rxjs/operators';
 import { DfaApplicationMain, FullTimeOccupant, SecondaryApplicant, OtherContact, DamagedRoom, CleanUpLogItem } from 'src/app/core/model/dfa-application-main.model';
 import { DFAProjectMainDataService } from './dfa-project-main-data.service';
 import { FormCreationService } from '../../core/services/formCreation.service';
-import { DfaProjectMain } from '../../core/model/dfa-project-main.model';
+import { DfaProjectMain, ProjectAmendment } from '../../core/model/dfa-project-main.model';
 
 @Injectable({ providedIn: 'root' })
 export class DFAProjectMainMappingService {
@@ -16,6 +16,10 @@ export class DFAProjectMainMappingService {
   mapDFAProjectMain(dfaProjectMain: DfaProjectMain): void {
     this.dfaProjectMainDataService.setDFAProjectMain(dfaProjectMain);
     this.setExistingDFAProjectMain(dfaProjectMain);
+  }
+
+  mapDFAProjectAmendment(dfaProjectAmendment: ProjectAmendment): void {
+    this.setProjectAmendmentDetails(dfaProjectAmendment);
   }
 
   setExistingDFAProjectMain(dfaProjectMain: DfaProjectMain): void {
@@ -35,6 +39,33 @@ export class DFAProjectMainMappingService {
         formGroup = project;
       });
     this.dfaProjectMainDataService.recoveryPlan = dfaProjectMain.project;
+  }
+
+  private setProjectAmendmentDetails(dfaAmendment: ProjectAmendment): void {
+    let formGroup: UntypedFormGroup;
+    this.formCreationService
+      .getProjectAmendmentForm()
+      .pipe(first())
+      .subscribe((projectAmendment) => {
+        projectAmendment.setValue({
+          amendmentNumber: dfaAmendment.amendmentNumber,
+          amendmentReceivedDate: dfaAmendment.amendmentReceivedDate,
+          amendmentReason: dfaAmendment.amendmentReason,
+          amendmentApprovedDate: dfaAmendment.amendmentApprovedDate,
+          emcrDecisionComments: dfaAmendment.emcrDecisionComments,
+          requestforProjectDeadlineExtention: dfaAmendment.requestforProjectDeadlineExtention,
+          amendedProjectDeadlineDate: dfaAmendment.amendedProjectDeadlineDate,
+          deadlineExtensionApproved: dfaAmendment.deadlineExtensionApproved,
+          amended18MonthDeadline: dfaAmendment.amended18MonthDeadline,
+          requestforAdditionalProjectCost: dfaAmendment.requestforAdditionalProjectCost,
+          estimatedAdditionalProjectCost: dfaAmendment.estimatedAdditionalProjectCost,
+          additionalProjectCostDecision: dfaAmendment.additionalProjectCostDecision,
+          approvedAdditionalProjectCost: dfaAmendment.approvedAdditionalProjectCost,
+          amendmentId: dfaAmendment.amendmentId,
+        });
+        formGroup = projectAmendment;
+      });
+    //this.dfaProjectMainDataService.recoveryPlan = dfaProjectAmendment;
   }
 
 }

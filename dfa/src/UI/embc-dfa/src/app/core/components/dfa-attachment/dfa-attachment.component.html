@@ -11,7 +11,7 @@
         >
           + Add {{ title }}
         </button>
-        <mat-card *ngIf="showFileUpload">
+        <mat-card appearance="outlined" *ngIf="showFileUpload" style="padding: 12px;">
           <div class="row">
             <div class="col-md-6">
               <b>{{title}}<span style="color:red;" *ngIf="requiredDocumentType !== null">*</span></b><br/>

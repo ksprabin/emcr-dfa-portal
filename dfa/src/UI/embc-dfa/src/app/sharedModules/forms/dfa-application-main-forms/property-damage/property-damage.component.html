@@ -1,4 +1,4 @@
-<mat-card class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
+<mat-card appearance="outlined" class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
   <mat-card-content>
 
     <form [formGroup]="propertyDamageForm">
@@ -61,14 +61,17 @@
               >
             </mat-form-field>
             <mat-error *ngIf="propertyDamageForm.hasError('noCauseOfDamage')">
-              <br/>At least one cause of damage is required.
+              At least one cause of damage is required.
             </mat-error>
           </div>
-        </div><br/><br/>
+        </div><br/>
 
         <div class="row">
           <p class="sub-heading" style="font-size: 15px">
-            Date(s) of damage?<span style="color:red" >*</span>
+            Dates of Damage<span style="color: red">*</span>
+          </p>
+          <p>
+            If the damage was caused all in one day, enter the same date in both the From date and the To date boxes.
           </p>
           <div class="col-md-4">
             <mat-form-field appearance="outline" >
@@ -143,7 +146,7 @@
               >
             </mat-form-field>
           </div>
-        </div><br/><br/>
+        </div><br/>
 
         <div class="row">
           <p class="sub-heading" style="font-size: 15px">
@@ -172,7 +175,7 @@
                 Maximum length is 2000 characters</mat-error
               >
           </mat-form-field>
-        </div><br/>
+        </div>
 
         <div class="row" *ngIf="isResidentialTenant === true || isHomeowner === true">
           <div class="col-md-12 bottomspace">
@@ -187,7 +190,7 @@
               <mat-radio-button value=true>Yes</mat-radio-button>&nbsp;&nbsp;<mat-radio-button value=false>No</mat-radio-button>
             </mat-radio-group>
           </div>
-        </div><br/><br/>
+        </div><br/>
 
         <div class="row" *ngIf="propertyDamageForm.get('wereYouEvacuated').value == 'true' && (isResidentialTenant === true || isHomeowner === true)">
           <p class="sub-heading" style="font-size: 15px">
@@ -200,6 +203,8 @@
                 matInput
                 [matDatepicker]="rtnPicker"
                 [readonly]="isReadOnly === true"
+                [min]="propertyDamageForm.get('damageFromDate').value ? propertyDamageForm.get('damageFromDate').value : '2000-01-01'"
+                [max]="todayDate"
                 formControlName="dateReturned">
               <mat-hint>MM/DD/YYYY</mat-hint>
               <mat-datepicker-toggle
@@ -229,8 +234,51 @@
               <mat-radio-button value=true>Yes</mat-radio-button>&nbsp;&nbsp;<mat-radio-button value=false>No</mat-radio-button>
             </mat-radio-group>
           </div>
-        </div><br/><br/>
+        </div>
 
+        <div class="row">
+          <div class="col-md-12">
+            <p class="sub-heading" style="font-size: 15px">
+              In the past, have you submitted a DFA application for the same property?<span style="color:red" >*</span>
+            </p>
+            <mat-radio-group
+              formControlName="previousApplication"
+              class="primary-radio-group horizontal-radio-group"
+              [disabled]="isReadOnly === true"
+              required
+              aria-label="Select an option">
+              <mat-radio-button
+                *ngFor="let option of radioOption"
+                class="primary-radio-button"
+                [value]="option"
+                (click)="OnSelectionPreviousApplication(option)"
+              >
+                {{ option }}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+        <mat-form-field appearance="outline" [hidden]="propertyDamageForm.get('previousApplication').value !== 'Yes' && propertyDamageForm.get('previousApplication').value !== 'Not sure'" class="col-md-4 topSpace">
+          <mat-label>Please provide details about all the past applications(s), such as the date you applied, the name you applied under, and the outcome.</mat-label>
+          <input matInput
+            [required]="false"
+            type="text"
+            [readonly]="isReadOnly === true"
+            [disabled]="isReadOnly === true"
+            formControlName="previousApplicationText"
+            placeholder=""
+            maxlength="100"
+          />
+          <mat-hint>Maximum length is 100 characters</mat-hint>
+          <mat-error
+            *ngIf="
+              propertyDamageForm.get('previousApplicationText').invalid &&
+            propertyDamageForm.get('previousApplicationText').hasError('maxLength')
+            "
+          >
+            Maximum length is 100 characters</mat-error
+          >
+        </mat-form-field>
       </ng-container>
     </form>
 

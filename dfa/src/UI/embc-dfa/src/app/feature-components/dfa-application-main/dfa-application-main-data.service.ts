@@ -26,8 +26,11 @@ export class DFAApplicationMainDataService {
   private _isSubmitted: boolean = false;
   private _applicationId: string;
   private _vieworedit: string;
+  private _contactonly: string;
   private _editstep: string;
   private _requiredDocuments = [];
+  private _onlyOccupantInHome: boolean = false;
+  private _onlyOtherContact: boolean = false;
   public changeViewOrEdit: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
@@ -110,6 +113,8 @@ export class DFAApplicationMainDataService {
   }
 
   public setDFAApplicationMain(dfaApplicationMain: DfaApplicationMain): void {
+    this.setIsOnlyOccupantInHome(dfaApplicationMain.onlyOccupantInHome);
+    this.setIsOnlyOtherContact(dfaApplicationMain.onlyOtherContact);
     this._dfaApplicationMain = dfaApplicationMain;
     this.cacheService.set('dfa-application-main', dfaApplicationMain);
   }
@@ -179,11 +184,33 @@ export class DFAApplicationMainDataService {
     return this._vieworedit;
   }
 
+  public setContactOnlyView(contactonly: string): void {
+    this._contactonly = contactonly;
+    this.changeViewOrEdit.emit(contactonly);
+  }
+  public getContactOnlyView(): string {
+    return this._contactonly;
+  }
+
   public setEditStep(editstep: string): void {
     this._editstep = editstep;
   }
   public getEditStep(): string {
     return this._editstep;
+  }
+
+  public getIsOnlyOccupantInHome(): boolean {
+    return this._onlyOccupantInHome;
+  }
+  public setIsOnlyOccupantInHome(value: boolean): void {
+    this._onlyOccupantInHome = value;
+  }
+
+  public getIsOnlyOtherContact(): boolean {
+    return this._onlyOtherContact;
+  }
+  public setIsOnlyOtherContact(value: boolean): void {
+    this._onlyOtherContact = value;
   }
 
    public createDFAApplicationMainDTO(): DfaApplicationMain {
@@ -194,7 +221,9 @@ export class DFAApplicationMainDataService {
       propertyDamage: this._propertyDamage,
       supportingDocuments: this._supportingDocuments,
       signAndSubmit: this._signAndSubmit,
-      deleteFlag: false
+      deleteFlag: false,
+      onlyOccupantInHome: this._onlyOccupantInHome,
+      onlyOtherContact: this._onlyOtherContact,
     };
   }
 }

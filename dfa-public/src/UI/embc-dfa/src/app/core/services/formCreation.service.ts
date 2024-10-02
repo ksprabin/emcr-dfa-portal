@@ -20,7 +20,7 @@ import { ApplicationDetailsForm, DamagedPropertyAddressForm, DamagedPropertyAddr
   ApplicationDetails,
   ContactsForm, Contacts} from '../model/dfa-application-main.model';
 import { CustomValidationService } from './customValidation.service';
-import { FileUpload, FileUploadsForm, RecoveryPlan, RecoveryPlanForm } from '../model/dfa-project-main.model';
+import { FileUpload, FileUploadsForm, ProjectAmendment, ProjectAmendmentForm, RecoveryPlan, RecoveryPlanForm } from '../model/dfa-project-main.model';
 import { FileUploadClaim, FileUploadsClaimForm, RecoveryClaim, RecoveryClaimForm } from '../model/dfa-claim-main.model';
 import { Invoice, InvoiceForm } from '../model/dfa-invoice.model';
 
@@ -312,6 +312,18 @@ export class FormCreationService {
 
   recoveryPlanForm$: Observable<UntypedFormGroup | undefined> =
     this.recoveryPlanForm.asObservable();
+
+  projectAmendmentForm: BehaviorSubject<UntypedFormGroup | undefined> =
+    new BehaviorSubject(
+      this.formBuilder.group(
+        new ProjectAmendmentForm(
+          new ProjectAmendment()
+        )
+      )
+    );
+
+  projectAmendmentForm$: Observable<UntypedFormGroup | undefined> =
+    this.projectAmendmentForm.asObservable();
 
   recoveryClaimForm: BehaviorSubject<UntypedFormGroup | undefined> =
     new BehaviorSubject(
@@ -729,6 +741,24 @@ export class FormCreationService {
         new RecoveryPlanForm(
           new RecoveryPlan(),
           this.customValidator
+        )
+      )
+    );
+  }
+
+  getProjectAmendmentForm(): Observable<UntypedFormGroup> {
+    return this.projectAmendmentForm$;
+  }
+
+  setProjectAmendmentForm(projectAmendmentForm: UntypedFormGroup): void {
+    this.projectAmendmentForm.next(projectAmendmentForm);
+  }
+
+  clearProjectAmendmentData(): void {
+    this.projectAmendmentForm.next(
+      this.formBuilder.group(
+        new ProjectAmendmentForm(
+          new ProjectAmendment()
         )
       )
     );

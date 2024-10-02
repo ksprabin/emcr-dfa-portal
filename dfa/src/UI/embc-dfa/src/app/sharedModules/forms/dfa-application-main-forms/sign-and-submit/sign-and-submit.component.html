@@ -1,4 +1,4 @@
-<mat-card class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
+<mat-card appearance="outlined" class="card-align" style="border:none;" [class.mat-elevation-z0]="true">
   <mat-card-content>
 
     <form [formGroup]="signAndSubmitForm">
@@ -41,18 +41,24 @@
       </ng-container>
     </form>
     <div *ngIf="dfaApplicationMainDataService.isSubmitted == true || isReadOnly === true">
-      Your application has been submitted.<br/><br/>
+      <b style="font-size:25px">Your application has been submitted.</b><br/><br/>
 
-      You may view the status of your application on your dashboard. While you must submit an application for each DFA property claim, do not submit more than one application for the same property.<br/><br/>
+      <b>Please read the following carefully:</b> <br/><br/>
+
+      You may view the current status of your application on your dashboard.<br/><br/>
+
+      While you must submit an application for each DFA property claim, do not submit more than one application for the same property.<br/><br/>
+
+      Please visit the Province's recovery resources webpage located at <a href="https://www2.gov.bc.ca/gov/content/safety/emergency-management/preparedbc/evacuation-recovery/emergency-recovery" target="_blank">Disaster recovery resources - Province of British Columbia (gov.bc.ca)</a> for steps to assist with your recovery.<br/><br/>
 
       <b>Clean Up Log</b><br/>
-      You may continue to update the Clean Up Log. <br/><br/>
+      If you are still undergoing clean up, please add to the Clean Up Log. <br/><br/>
 
       <b>Damaged Items</b><br/>
       If further items are identified after submitting your application, please add them to the Damaged Items by Room list. <br/><br/>
 
       <b>Supporting Documents</b><br/>
-      You may continue to add supporting documents, but are unable to delete any documents you have uploaded to your application.**<br/><br/>
+      You can continue to add supporting documents, but can't delete any documents already uploaded to your application.<br/><br/>
 
       <b>Other Contacts</b><br/>
       You may add or edit Other Contacts.<br/><br/>

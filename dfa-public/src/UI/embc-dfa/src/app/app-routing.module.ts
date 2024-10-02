@@ -117,6 +117,22 @@ const routes: Routes = [
     canActivate: [AutoLoginPartialRoutesGuard]
   },
   {
+    path: 'dfa-project-view/:id',
+    loadChildren: () =>
+      import(
+        './feature-components/dfa-project-main/dfa-project-main.module'
+      ).then((m) => m.DFAProjectMainModule),
+    canActivate: [AutoLoginPartialRoutesGuard]
+  },
+  {
+    path: 'dfa-project-amendment/:id',
+    loadChildren: () =>
+      import(
+        './feature-components/dfa-project-amendment/dfa-project-amendment.module'
+      ).then((m) => m.DFAProjectAmendmentModule),
+    canActivate: [AutoLoginPartialRoutesGuard]
+  },
+  {
     path: 'dfa-claim-main',
     loadChildren: () =>
       import(

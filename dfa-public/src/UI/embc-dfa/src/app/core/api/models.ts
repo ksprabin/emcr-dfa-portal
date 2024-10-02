@@ -66,5 +66,6 @@ export { ProfileName } from './models/profile-name';
 export { AddressDataConflict } from './models/address-data-conflict';
 export { InviteRequest } from './models/invite-request';
 export { InviteToken } from './models/invite-token';
+export { CurrentProjectAmendment } from './models/current-project-amendment';
 export { SecondaryApplicant } from './models/secondary-applicant';
 export { SecondaryApplicantTypeOption } from './models/secondary-applicant-type-option';

@@ -21,7 +21,7 @@ mat-form-field {
   color: #169bd5;
 }
 
-.mat-header-cell {
+.mat-mdc-header-cell {
   font-weight: 700;
   font-size: 15px;
   color: black;
@@ -62,7 +62,7 @@ table {
   box-shadow: none;
 }
 
-.mat-table {
+.mat-mdc-table {
   overflow: auto;
   width: 100%;
   max-height: 500px;
@@ -71,19 +71,6 @@ table {
 .mat-column-deleteIcon {
   text-align: right;
   justify-content: flex-end;
-}
-
-
-.delete-image img:last-child {
-  display: none;
-}
-
-.delete-image:hover img:last-child {
-  display: block;
-}
-
-.delete-image:hover img:first-child {
-  display: none;
 }
 
 @media (max-width: 600px) {

@@ -45,6 +45,8 @@ export default class PropertyDamageComponent implements OnInit, OnDestroy {
   isReadOnly: boolean = false;
   isFarmOwner: boolean = false;
   isCharitableOrganization: boolean = false;
+  radioOption: string[] = ['Yes', 'No', 'Not sure'];
+
 
   constructor(
     @Inject('formBuilder') formBuilder: UntypedFormBuilder,
@@ -78,6 +80,8 @@ export default class PropertyDamageComponent implements OnInit, OnDestroy {
       this.propertyDamageForm.controls.otherDamage.disable();
       this.propertyDamageForm.controls.wereYouEvacuated.disable();
       this.propertyDamageForm.controls.residingInResidence.disable();
+      this.propertyDamageForm.controls.previousApplication.disable();
+      this.propertyDamageForm.controls.previousApplicationText.disable();
     } else {
       this.propertyDamageForm.controls.floodDamage.enable();
       this.propertyDamageForm.controls.landslideDamage.enable();
@@ -85,6 +89,14 @@ export default class PropertyDamageComponent implements OnInit, OnDestroy {
       this.propertyDamageForm.controls.otherDamage.enable();
       this.propertyDamageForm.controls.wereYouEvacuated.enable();
       this.propertyDamageForm.controls.residingInResidence.enable();
+      this.propertyDamageForm.controls.previousApplication.enable();
+      this.propertyDamageForm.controls.previousApplicationText.enable();
+    }
+  }
+
+  OnSelectionPreviousApplication(element) {
+    if (element == 'No' && !this.isReadOnly) {
+      this.propertyDamageForm.get('previousApplicationText').setValue('');
     }
   }
 

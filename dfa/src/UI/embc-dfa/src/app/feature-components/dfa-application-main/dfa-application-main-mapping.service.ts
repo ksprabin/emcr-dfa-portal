@@ -111,6 +111,7 @@ export class DFAApplicationMainMappingService {
           ...dfaApplicationMain.propertyDamage,
           wereYouEvacuated: dfaApplicationMain.propertyDamage.wereYouEvacuated === true ? 'true' : (dfaApplicationMain.propertyDamage.wereYouEvacuated === false ? 'false' : null),
           residingInResidence: dfaApplicationMain.propertyDamage.residingInResidence === true ? 'true' : (dfaApplicationMain.propertyDamage.residingInResidence === false ? 'false' : null),
+          previousApplication: dfaApplicationMain.propertyDamage.previousApplication,
         });
         formGroup = propertyDamage;
       });

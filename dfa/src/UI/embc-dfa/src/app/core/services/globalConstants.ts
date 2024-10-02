@@ -133,19 +133,19 @@ export const farmoperationderivesthatpersonsmajorincom: DialogContent = {
 }
 
 export const charitynobenefit: DialogContent = {
-  text: '<p>Your charitable organization must provide a benefit or service to the community to be eligible for DFA.</p><p>You may call us to discuss further at 1-888-257-4777.</p><p><b>Does your charitable organization provide a benefit or service to the community?</b></p>',
+  text: '<p>Your charitable/non-profit organization must provide a benefit or service to the community to be eligible for DFA.</p><p>You may call us to discuss further at 1-888-257-4777.</p><p><b>Does your charitable organization provide a benefit or service to the community?</b></p>',
   cancelButton: 'No, Save & Close my Application',
   confirmButton: 'Yes, Continue my Application'
 }
 
 export const charityno12months: DialogContent = {
-  text: '<p>Your charitable organization must have been in existence for at least 12 months to be eligible for DFA.</p><p>You may call us to discuss further at 1-888-257-4777.</p><p><b>Has your charitable organization been in existence for at least 12 months?</b></p>',
+  text: '<p>Your charitable/non-profit organization must have been in existence for at least 12 months to be eligible for DFA.</p><p>You may call us to discuss further at 1-888-257-4777.</p><p><b>Has your charitable organization been in existence for at least 12 months?</b></p>',
   cancelButton: 'No, Save & Close my Application',
   confirmButton: 'Yes, Continue my Application'
 }
 
 export const charityBCSocietiesAct: DialogContent = {
-  text: '<p>Your charitable organization must be registered under the BC Societies Act.</p><p>You may call us to discuss further at 1-888-257-4777.</p><p><b>Is your charitable organization registered under the BC Societies Act?</b></p>',
+  text: '<p>Your charitable/non-profit organization must be registered under the BC Societies Act.</p><p>You may call us to discuss further at 1-888-257-4777.</p><p><b>Is your charitable organization registered under the BC Societies Act?</b></p>',
   cancelButton: 'No, Save & Close my Application',
   confirmButton: 'Yes, Continue my Application'
 }

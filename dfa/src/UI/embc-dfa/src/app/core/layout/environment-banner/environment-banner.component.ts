@@ -1,13 +1,20 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EnvironmentInformation } from '../../model/environment-information.model';
+import { EnvironmentBannerService } from './environment-banner.service';
+import { MarkdownComponent } from 'ngx-markdown';
+import { NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-environment-banner',
   templateUrl: './environment-banner.component.html',
-  styleUrls: ['./environment-banner.component.scss']
+  styleUrls: ['./environment-banner.component.scss'],
 })
-export class EnvironmentBannerComponent {
-  @Input() environment?: EnvironmentInformation;
+export class EnvironmentBannerComponent implements OnInit {
+  environment: EnvironmentInformation;
 
-  constructor() {}
+  constructor(private envBannerService: EnvironmentBannerService) {}
+
+  ngOnInit(): void {
+    this.environment = this.envBannerService.getEnvironmentBanner();
+  }
 }

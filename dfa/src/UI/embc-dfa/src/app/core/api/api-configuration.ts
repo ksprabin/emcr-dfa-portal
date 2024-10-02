@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ApiConfiguration {
-  rootUrl: string = 'http://localhost:5020';
+  rootUrl: string = 'https://dfa-portal-dev.apps.silver.devops.gov.bc.ca';
 }
 
 /**

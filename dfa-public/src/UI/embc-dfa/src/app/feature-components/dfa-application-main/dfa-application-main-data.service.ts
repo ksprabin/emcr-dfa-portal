@@ -31,6 +31,7 @@ export class DFAApplicationMainDataService {
   private _requiredDocuments = [];
   private _business: string;
   public changeViewOrEdit: EventEmitter<string> = new EventEmitter<string>();
+  public changeAppId: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private cacheService: CacheService,
@@ -162,6 +163,7 @@ export class DFAApplicationMainDataService {
     this._applicationId = applicationId;
     if (applicationId) {
       this.cacheService.set('applicationId', applicationId);
+      this.changeAppId.emit(applicationId);
     }
     else {
       this.cacheService.remove('applicationId');

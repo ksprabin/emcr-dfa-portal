@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\local\\bc-justice\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj": {}
+    "C:\\Users\\271015\\source\\repos\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj": {}
   },
   "projects": {
-    "C:\\local\\bc-justice\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj": {
+    "C:\\Users\\271015\\source\\repos\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\local\\bc-justice\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj",
+        "projectUniqueName": "C:\\Users\\271015\\source\\repos\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj",
         "projectName": "pdf-service",
-        "projectPath": "C:\\local\\bc-justice\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj",
-        "packagesPath": "C:\\Users\\177069\\.nuget\\packages\\",
-        "outputPath": "C:\\local\\bc-justice\\emcr-dfa-portal\\pdf-service\\obj\\",
+        "projectPath": "C:\\Users\\271015\\source\\repos\\emcr-dfa-portal\\pdf-service\\pdf-service.csproj",
+        "packagesPath": "C:\\Users\\271015\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\271015\\source\\repos\\emcr-dfa-portal\\pdf-service\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\177069\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\271015\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -118,7 +121,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

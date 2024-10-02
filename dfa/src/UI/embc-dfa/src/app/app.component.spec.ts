@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { LoginService } from './core/services/login.service';
 import { BootstrapService } from './core/services/bootstrap.service';
 import { OAuthModule } from 'angular-oauth2-oidc';
@@ -11,6 +11,7 @@ import { NgIdleKeepaliveModule } from '@ng-idle/keepalive';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MockEnvironmentBannerService } from './unit-tests/mockEnvironmentBanner.service';
 import { ConfigService } from './core/services/config.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 @Component({ selector: 'app-header', template: '' })
 class HeaderStubComponent {}
@@ -31,31 +32,30 @@ describe('AppComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule,
-        RouterTestingModule,
-        OAuthModule.forRoot(),
-        NgIdleKeepaliveModule.forRoot(),
-        MatDialogModule
-      ],
-      declarations: [
+    declarations: [
         AppComponent,
         HeaderStubComponent,
         FooterStubComponent
         // EnvironmentBannerStubComponent
-      ],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
+    ],
+    schemas: [NO_ERRORS_SCHEMA],
+    imports: [RouterTestingModule,
+        OAuthModule.forRoot(),
+        NgIdleKeepaliveModule.forRoot(),
+        MatDialogModule],
+    providers: [
         AppComponent,
         { provides: LoginService, useValue: loginService },
         { provides: BootstrapService, useValue: bootstrapService },
         { provide: APP_BASE_HREF, useValue: '/' },
         {
-          provide: ConfigService,
-          useClass: MockEnvironmentBannerService
-        }
-      ]
-    }).compileComponents();
+            provide: ConfigService,
+            useClass: MockEnvironmentBannerService
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+}).compileComponents();
   }));
 
   beforeEach(() => {

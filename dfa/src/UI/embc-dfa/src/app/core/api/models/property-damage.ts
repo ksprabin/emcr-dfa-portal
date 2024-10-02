@@ -13,6 +13,8 @@ export interface PropertyDamage {
   landslideDamage?: null | boolean;
   otherDamage?: null | boolean;
   otherDamageText?: null | string;
+  previousApplication?: null | string;
+  previousApplicationText?: null | string;
   residingInResidence?: null | boolean;
   stormDamage?: null | boolean;
   wereYouEvacuated?: null | boolean;

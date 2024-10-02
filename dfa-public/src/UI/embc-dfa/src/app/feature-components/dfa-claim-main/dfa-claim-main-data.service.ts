@@ -26,6 +26,7 @@ export class DFAClaimMainDataService {
   public changeViewOrEdit: EventEmitter<string> = new EventEmitter<string>();
   public changeDisableFileUpload: EventEmitter<string> = new EventEmitter<string>();
   public stepSelected: EventEmitter<string> = new EventEmitter<string>();
+  public changeClaimId: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private cacheService: CacheService,
@@ -123,6 +124,7 @@ export class DFAClaimMainDataService {
   public setClaimId(claimId: string): void {
     this._claimId = claimId;
     this.cacheService.set('claimId', claimId);
+    this.changeClaimId.emit(claimId);
   }
 
   public getClaimId(): string {

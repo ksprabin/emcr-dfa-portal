@@ -1,5 +1,5 @@
 {
-  "/api/*": {
+  "/api/**": {
     "target": "https://dfa-portal-test.apps.silver.devops.gov.bc.ca",
     "secure": false,
     "changeOrigin": true,

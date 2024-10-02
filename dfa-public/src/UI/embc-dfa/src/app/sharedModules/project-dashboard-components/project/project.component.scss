@@ -8,6 +8,12 @@
   min-width: 900px;
 }
 
+.button-column {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+
 .downArrow {
     font-size: 32px;
     cursor: pointer;
@@ -28,7 +34,8 @@
   padding-left: 16px;
   padding-right: 16px;
   max-width: 200px;
-  margin-left: 2%;
+  min-width: 180px;
+  margin: 3px;
   font-weight: bold;
   border: 1px solid #003366 !important;
   background: #f9fbfe 0% 0% no-repeat padding-box;

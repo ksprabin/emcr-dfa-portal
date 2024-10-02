@@ -22,9 +22,13 @@ export interface DamagedPropertyAddress {
   isDamagedAddressVerified?: null | boolean;
   isPrimaryAndDamagedAddressSame?: null | boolean;
   landlordEmail?: null | string;
+  landlordEmail2?: null | string;
   landlordGivenNames?: null | string;
+  landlordGivenNames2?: null | string;
   landlordPhone?: null | string;
+  landlordPhone2?: null | string;
   landlordSurname?: null | string;
+  landlordSurname2?: null | string;
   lossesExceed1000?: null | boolean;
   manufacturedHome?: null | boolean;
   occupyAsPrimaryResidence?: null | boolean;

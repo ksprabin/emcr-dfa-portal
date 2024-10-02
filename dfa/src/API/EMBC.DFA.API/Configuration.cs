@@ -127,7 +127,7 @@ namespace EMBC.DFA.API
                 };
             });
 
-            services.Configure<SwaggerUi3Settings>(options =>
+            services.Configure<SwaggerUiSettings>(options =>
             {
                 options.Path = "/api/openapi";
                 options.DocumentTitle = "DFA Portal API Documentation";
@@ -145,7 +145,7 @@ namespace EMBC.DFA.API
                 });
 
                 document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("bearer token"));
-                document.GenerateAbstractProperties = true;
+                //document.GenerateAbstractProperties = true;
             });
 
             services.AddTransient<IEvacuationSearchService, EvacuationSearchService>();
@@ -184,6 +184,7 @@ namespace EMBC.DFA.API
                 policy.WithOrigins(corsOrigins);
             }
             }));
+            services.AddMemoryCache();
         }
 
         public void ConfigurePipeline(PipelineServices services)
@@ -198,7 +199,7 @@ namespace EMBC.DFA.API
             if (!env.IsProduction())
             {
                 app.UseOpenApi();
-                app.UseSwaggerUi3();
+                app.UseSwaggerUi();
             }
             app.UseCors();
             app.UseAuthentication();

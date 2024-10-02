@@ -33,7 +33,7 @@ mat-form-field {
   hyphens: auto;
 }
 
-.mat-header-cell {
+.mat-mdc-header-cell {
 font-weight: 700;
 font-size: 15px;
 color: black;
@@ -72,7 +72,7 @@ width: 99.99%;
 box-shadow: none;
 }
 
-.mat-table {
+.mat-mdc-table {
 overflow: auto;
 width: 100%;
 max-height: 500px;
@@ -83,37 +83,12 @@ text-align: right;
 justify-content: flex-end;
 }
 
-
-.delete-image img:last-child {
-display: none;
-}
-
-.delete-image:hover img:last-child {
-display: block;
-}
-
-.delete-image:hover img:first-child {
-display: none;
-}
-
 .example-damage-image {
   max-width: 1100px;
   margin: 0 auto;
   display: block;
   margin-top: 10px;
   margin-bottom: 36px;
-}
-
-.edit-image img:last-child {
-  display: none;
-}
-
-.edit-image:hover img:last-child {
-  display: block;
-}
-
-.edit-image:hover img:first-child {
-  display: none;
 }
 
 @media (max-width: 600px) {

@@ -13,14 +13,17 @@ export class DFAProjectMainDataService {
   private _applicationId: string;
   private _projectId: string;
   private _claimId: string;
+  private _appUrl: string;
   private _vieworedit: string;
   private _stepselected: string;
   private _isdisabled: string;
   private _editstep: string;
   private _requiredDocuments = [];
   public changeViewOrEdit: EventEmitter<string> = new EventEmitter<string>();
+  public changeAppUrl: EventEmitter<string> = new EventEmitter<string>();
   public changeDisableFileUpload: EventEmitter<string> = new EventEmitter<string>();
   public stepSelected: EventEmitter<string> = new EventEmitter<string>();
+  public changeProjectId: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private cacheService: CacheService,
@@ -88,6 +91,7 @@ export class DFAProjectMainDataService {
   public setProjectId(projectId: string): void {
     this._projectId = projectId;
     this.cacheService.set('projectId', projectId);
+    this.changeProjectId.emit(projectId);
   }
 
   public getProjectId(): string {

@@ -82,12 +82,21 @@ export class ComponentCreationService {
 
   dfaApplicationMainComponents: Array<any> = [
     {
-      component: 'damaged-property-address',
-      nextButtonLabel: 'Next - Cause of Damage',
+      component: 'application-details',
+      nextButtonLabel: 'Next - Damaged Property',
       backButtonLabel: 'Return to Dashboard',
       isLast: false,
       loadWrapperButton: false,
       lastStep: -2,
+      stepName: 'Application Details'
+    },   
+    {
+      component: 'damaged-property-address',
+      nextButtonLabel: 'Next - Cause of Damage',
+      backButtonLabel: 'Go Back & Edit',
+      isLast: false,
+      loadWrapperButton: false,
+      lastStep: 0,
       stepName: 'Damaged Property'
     },
     {
@@ -135,6 +144,30 @@ export class ComponentCreationService {
       lastStep: 0,
       stepName: 'Supporting Documents'
     }
+  ];
+
+  dfaProjectMainComponents: Array<any> = [
+
+    {
+      component: 'recovery-plan',
+      nextButtonLabel: 'Next - Upload Documents',
+      backButtonLabel: 'Go Back',
+      isLast: false,
+      loadWrapperButton: false,
+      lastStep: -1,
+      stepName: 'Recovery Plan',
+      editable: true
+    },
+    {
+      component: 'supporting-documents-project',
+      nextButtonLabel: 'Next - Review & Submit',
+      backButtonLabel: 'Go Back',
+      isLast: false,
+      loadWrapperButton: false,
+      lastStep: 0,
+      stepName: 'Upload Documents',
+      editable: false
+    }
 
   ];
 
@@ -168,6 +201,15 @@ export class ComponentCreationService {
     const componentArr: Array<ComponentMetaDataModel> =
       new Array<ComponentMetaDataModel>();
     for (const comp of this.dfaApplicationMainComponents) {
+      componentArr.push(Object.assign(new ComponentMetaDataModel(), comp));
+    }
+    return componentArr;
+  }
+
+  createDFAProjectMainSteps(): Array<ComponentMetaDataModel> {
+    const componentArr: Array<ComponentMetaDataModel> =
+      new Array<ComponentMetaDataModel>();
+    for (const comp of this.dfaProjectMainComponents) {
       componentArr.push(Object.assign(new ComponentMetaDataModel(), comp));
     }
     return componentArr;
