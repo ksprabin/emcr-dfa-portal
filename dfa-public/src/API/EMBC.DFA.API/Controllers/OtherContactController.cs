@@ -84,6 +84,11 @@ namespace EMBC.DFA.API.Controllers
         public string lastName { get; set; }
         public string phoneNumber { get; set; }
         public string email { get; set; }
+
+        // 2024-09-16 EMCRI-663 waynezen; added new fields
+        public string? cellPhone { get; set; }
+        public string? jobTitle { get; set; }
+
         public bool deleteFlag { get; set; }
     }
 }

@@ -108,6 +108,8 @@ export class DFAApplicationMainComponent
       this.dfaApplicationMainDataService.setApplicationId(applicationId);
     }
     this.formCreationService.clearApplicationDetailsData();
+    // 2024-09-18 EMCRI-663 waynezen; clear Contacts form data in between Applications
+    this.formCreationService.clearContactsData();
     this.formCreationService.clearOtherContactsData();
 
     this.steps = this.componentService.createDFAApplicationMainSteps();
@@ -116,8 +118,6 @@ export class DFAApplicationMainComponent
     //this.showStepper = true;
     this.dfaApplicationMainHeading = 'Create your Application'
   }
-
-
 
   ngAfterViewChecked(): void {
     this.cd.detectChanges();
@@ -272,7 +272,28 @@ export class DFAApplicationMainComponent
         //this.otherContactsForm.get('otherContact').getRawValue()
         break;
         case 'contacts':
-          // TODO: EMCRI-663 - modify dfaApplicationMainDataService
+          // 2024-09-16 EMCRI-663 waynezen; new Contacts form
+          this.dfaApplicationMainDataService.contacts.doingBusinessAs = this.form.get('doingBusinessAs').value;
+          this.dfaApplicationMainDataService.contacts.businessNumber = this.form.get('businessNumber').value
+          this.dfaApplicationMainDataService.contacts.addressLine1 = this.form.get('addressLine1').value
+          this.dfaApplicationMainDataService.contacts.addressLine2 = this.form.get('addressLine2').value
+          this.dfaApplicationMainDataService.contacts.city = this.form.get('city').value
+          this.dfaApplicationMainDataService.contacts.community = this.form.get('community').value
+          this.dfaApplicationMainDataService.contacts.stateProvince = this.form.get('stateProvince').value
+          this.dfaApplicationMainDataService.contacts.postalCode = this.form.get('postalCode').value
+          this.dfaApplicationMainDataService.contacts.isDamagedAddressVerified = this.form.get('isDamagedAddressVerified').value;
+          this.dfaApplicationMainDataService.contacts.primaryContactSearch = this.form.get('primaryContactSearch').value
+          this.dfaApplicationMainDataService.contacts.primaryContactValidated = this.form.get('primaryContactValidated').value
+          this.dfaApplicationMainDataService.contacts.guidanceSupport = this.form.get('guidanceSupport').value == 'true' ? true : (this.form.get('guidanceSupport').value == 'false' ? false : null);
+          this.dfaApplicationMainDataService.contacts.pcFirstName = this.form.get('pcFirstName').value
+          this.dfaApplicationMainDataService.contacts.pcLastName = this.form.get('pcLastName').value
+          this.dfaApplicationMainDataService.contacts.pcDepartment = this.form.get('pcDepartment').value
+          this.dfaApplicationMainDataService.contacts.pcBusinessPhone = this.form.get('pcBusinessPhone').value
+          this.dfaApplicationMainDataService.contacts.pcEmailAddress = this.form.get('pcEmailAddress').value
+          this.dfaApplicationMainDataService.contacts.pcCellPhone = this.form.get('pcCellPhone').value
+          this.dfaApplicationMainDataService.contacts.pcJobTitle = this.form.get('pcJobTitle').value        
+          this.dfaApplicationMainDataService.contacts.pcNotes = this.form.get('pcNotes').value;
+
           break;
       case 'occupants':
         break;

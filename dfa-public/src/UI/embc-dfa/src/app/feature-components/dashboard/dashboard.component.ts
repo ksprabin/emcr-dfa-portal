@@ -56,8 +56,7 @@ export class DashboardComponent implements OnInit {
     this.isLoading = true;
 
     // 2024-07-22 EMCRI-440 waynezen; use new ContactService to get Business Name from Keycloak access token
-    // console.debug('[DFA] dashboard loading');
-    
+    // console.debug('[DFA] dashboard loading');    
     this.contactService.contactGetLoginInfo().subscribe(loginInfo => {
       if (loginInfo) {
         this.businessName = loginInfo?.bceid_business_name;

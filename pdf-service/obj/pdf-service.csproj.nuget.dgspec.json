@@ -59,11 +59,11 @@
             },
             "Haukcode.WkHtmlToPdfDotNet": {
               "target": "Package",
-              "version": "[1.5.88, )"
+              "version": "[1.5.59, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[8.0.4, )"
+              "version": "[6.0.0, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",

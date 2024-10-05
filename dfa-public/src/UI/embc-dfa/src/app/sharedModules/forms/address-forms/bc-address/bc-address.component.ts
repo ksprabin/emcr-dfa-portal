@@ -22,6 +22,7 @@ import { AreaCommunity } from '../../../../core/api/models';
 //import { MatAutocompleteModule } from '@angular/material/autocomplete';
 //import { MatInputModule } from '@angular/material/input';
 //import { MatFormFieldModule } from '@angular/material/form-field';
+import { DFAApplicationMainDataService } from 'src/app/feature-components/dfa-application-main/dfa-application-main-data.service';
 
 const SCRIPT_PATH = 'http://ws1.postescanada-canadapost.ca/js/addresscomplete-2.30.min.js?key=ea53-hg74-kb59-ym41';
 
@@ -65,7 +66,8 @@ export class BcAddressComponent implements OnInit, AfterViewChecked {
     private locationService: LocationService,
     private cd: ChangeDetectorRef,
     private renderer: Renderer2,
-    private scriptService: ScriptService
+    private scriptService: ScriptService,
+    public dfaApplicationMainDataService: DFAApplicationMainDataService,
   ) { }
 
   ngOnInit(): void {
@@ -96,6 +98,18 @@ export class BcAddressComponent implements OnInit, AfterViewChecked {
     //  startWith(''),
     //  map((value) => (value ? this._filter(value) : this.countries.slice()))
     //);
+
+    // 2024-10-03 EMCRI-663 waynezen; display initial "validated" message when form is first displayed
+    this.dfaApplicationMainDataService.canadaPostVerified.subscribe((verifiedornot) => {
+      this.isCanadaPostValidated = verifiedornot;
+      if (verifiedornot == "true") {
+        this.addressMatchResponse = 'Validated against Canada Post';
+      }
+      else {
+        this.addressMatchResponse = 'Unable to validate the address';
+      }
+    })
+
   }
 
   private _filter(value: string): string[] {

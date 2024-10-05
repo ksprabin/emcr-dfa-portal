@@ -9,11 +9,16 @@ mat-form-field {
 .primary-radio-group {
   display: flex;
   flex-direction: column;
-  margin: 15px 0;
+  //margin: 15px 0;
 }
 
 .primary-radio-button {
     margin: 5px;
+}
+
+.radio-extra-label {
+  font-weight: normal;
+  //margin-left: 30px;
 }
 
 .highlight {
@@ -130,4 +135,56 @@ table {
   border-color: #fcba19;
   margin: 7px;
   padding: 15px;
+}
+
+// mat-form-field:has(input[readonly]) {
+//   background-color: greenyellow;
+// }
+
+.infoText {
+  background: #F6F9FC 0% 0% no-repeat padding-box;
+  border: 1px solid #003366;
+  border-radius: 10px;
+  height: 56px;
+}
+
+.legalText {
+  font-family: 'BC Sans';
+  font-size: 14px;
+  color: #313132;
+  margin-left: 5px;
+}
+
+.iconText {
+  position: relative;
+}
+
+.iconStyleGreen {
+  //font-size: 16px;
+  color: #62A370;
+}
+
+.iconStyleBlue {
+  //font-size: 16px;
+  color: #003366;
+  width: 22px;
+  padding-top: 2px;
+}
+
+.noshow {
+  display: none;
+
+  &.visible {
+    display: contents;
+  }
+}
+
+.otherContactsBarBack {
+  background-color: #38598A;
+}
+
+.otherContactsBarText {
+  font-family: 'BC Sans';
+  font-size: 16px;
+  color: #ffffff;
 }

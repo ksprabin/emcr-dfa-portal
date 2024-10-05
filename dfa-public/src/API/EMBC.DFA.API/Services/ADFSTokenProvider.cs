@@ -82,7 +82,10 @@ namespace EMBC.DFA.API.Services
         public string ServiceAccountPassword { get; set; }
         public string ResourceName { get; set; }
     }
-
+    public class PdfServiceConfigs
+    {
+        public string GeneratePDFFile { get; set; }
+    }
     public static class AccessTokenProviderEx
     {
         public static IServiceCollection AddADFSTokenProvider(this IServiceCollection services)

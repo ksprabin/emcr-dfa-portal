@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using EMBC.DFA.API.ConfigurationModule.Models.Dynamics;
+using EMBC.DFA.API.ConfigurationModule.Models.PDF.PDFService;
 using EMBC.DFA.API.Services;
 using EMBC.Gov.BCeID;
 using EMBC.Gov.BCeID.Models;
@@ -197,11 +198,14 @@ namespace EMBC.DFA.API
             services.AddTransient<IProfileInviteService, ProfileInviteService>();
             services.AddTransient<IConfigurationHandler, Handler>();
             services.AddTransient<IDynamicsGateway, DynamicsGateway>();
+            services.AddTransient<PDFServiceHandler, PDFServiceHandler>();
 
             // 2024-07-02 EMCRI-363 waynezen: added
             services.AddTransient<IUserService, UserService>();
 
             services.Configure<ADFSTokenProviderOptions>(configuration.GetSection("Dynamics:ADFS"));
+            services.Configure<PdfServiceConfigs>(configuration.GetSection("pdfService"));
+
             services.AddADFSTokenProvider();
             services.AddHttpClient("captcha");
             services.AddScoped(sp =>

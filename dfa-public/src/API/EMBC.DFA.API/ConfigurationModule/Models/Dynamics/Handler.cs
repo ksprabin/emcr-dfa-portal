@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Cronos;
+using EMBC.DFA.API.ConfigurationModule.Models.AuthModels;
 using EMBC.DFA.API.Controllers;
 using EMBC.DFA.API.Mappers;
 using EMBC.Utilities.Caching;
@@ -43,7 +45,8 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         Task<string> DeleteFileUploadAsync(dfa_DFAActionDeleteDocuments_parms dfa_DFAActionDeleteDocuments_parms);
         Task<IEnumerable<dfa_projectdocumentlocation>> GetProjectFileUploadsAsync(Guid projectId);
         Task<IEnumerable<dfa_projectclaimdocumentlocation>> GetProjectClaimFileUploadsAsync(Guid claimId);
-        Task<List<CurrentApplication>> HandleApplicationList(string profileId);
+        // 2024-09-19 EMCRI-676 waynezen; overloaded method that filters application based on BCeID Org
+        Task<List<CurrentApplication>> HandleApplicationList(BceidUserData bceidUser);
         Task<int> HandleEvents();
         Task<IEnumerable<dfa_event>> HandleOpenPublicEventList();
         Task<IEnumerable<dfa_effectedregioncommunities>> HandleEffectedRegionCommunityList();
@@ -59,6 +62,12 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         Task<string> HandleInvoiceCreateUpdate(dfa_invoice_params objInvoice);
         Task<List<CurrentInvoice>> HandleInvoiceList(string claimId);
         Task<string> HandleInvoiceDelete(dfa_invoice_delete_params objInvoice);
+        Task<string> HandleFileUploadApplicationPDFAsync(SubmissionEntityPDF objDocumentLocation);
+
+        // 2024-09-17 EMCRI-663 waynezen; handle Primary Contact
+        Task<string> HandlePrimaryContactAsync(dfa_applicationprimarycontact_params objPrimaryContact);
+        Task<dfa_applicationprimarycontact_retrieve> HandleGetPrimaryContactAsync(string bceidUserId);
+        Task<string> HandleBCeIDAudit(dfa_audit_event auditEvent);
     }
 
     public class Handler : IConfigurationHandler
@@ -172,12 +181,14 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
             return mappedProjects;
         }
 
-        public async Task<List<CurrentApplication>> HandleApplicationList(string profileId)
+        // 2024-09-19 EMCRI-676 waynezen; overloaded method that filters application based on BCeID Org
+        public async Task<List<CurrentApplication>> HandleApplicationList(BceidUserData bceidUser)
         {
-            var lstApps = await listsGateway.GetApplicationListAsync(profileId);
+            var lstApps = await listsGateway.GetApplicationListAsync(bceidUser);
             var mappedApps = mapper.Map<List<CurrentApplication>>(lstApps);
             return mappedApps;
         }
+
         public async Task<CurrentApplication> HandleApplicationDetails(string applicationId)
         {
             var objApp = await listsGateway.GetApplicationDetailsAsync(applicationId);
@@ -265,7 +276,11 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
             var result = await listsGateway.InsertDocumentLocationClaimAsync(objDocumentLocation);
             return result;
         }
-
+        public async Task<string> HandleFileUploadApplicationPDFAsync(SubmissionEntityPDF objDocumentLocation)
+        {
+            var result = await listsGateway.InsertDocumentLocationApplicationPDFAsync(objDocumentLocation);
+            return result;
+        }
         public async Task<string> DeleteFileUploadAsync(dfa_DFAActionDeleteDocuments_parms dfa_DFAActionDeleteDocuments_parms)
         {
             var result = await listsGateway.DeleteDocumentLocationAsync(dfa_DFAActionDeleteDocuments_parms);
@@ -339,6 +354,25 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
             var lstApps = await listsGateway.GetInvoiceListAsync(claimId);
             var mappedInvoices = mapper.Map<List<CurrentInvoice>>(lstApps);
             return mappedInvoices;
+        }
+
+        // 2024-09-17 EMCRI-663 waynezen; handle Primary Contact
+        public async Task<string> HandlePrimaryContactAsync(dfa_applicationprimarycontact_params primeContactIn)
+        {
+            var result = await listsGateway.UpsertPrimaryContactAsync(primeContactIn);
+            return result;
+        }
+
+        public async Task<dfa_applicationprimarycontact_retrieve> HandleGetPrimaryContactAsync(string contactId)
+        {
+            var result = await listsGateway.GetPrimaryContactbyContactIdAsync(contactId);
+            return result;
+        }
+
+        public async Task<string> HandleBCeIDAudit(dfa_audit_event auditEvent)
+        {
+            var result = await listsGateway.CreateBCeIDAuditEvent(auditEvent);
+            return result;
         }
     }
 }

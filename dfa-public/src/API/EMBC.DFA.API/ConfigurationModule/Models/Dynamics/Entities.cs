@@ -83,6 +83,22 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         public int? dfa_damagedpropertyaddresscanadapostverified { get; set; } // optional Two Options
     }
 
+    public class dfa_bceidusers_params
+    {
+        public string? dfa_name { get; set; }
+        public string? dfa_bceidbusinessguid { get; set; }
+        public string? dfa_bceiduserguid { get; set; }
+    }
+
+    public class dfa_audit_event
+    {
+        public string? dfa_name { get; set; }
+        public string? dfa_bceidbusinessguid { get; set; }
+        public string? dfa_bceiduserguid { get; set; }
+        public DateTime dfa_eventdate { get; set; }
+        public string? dfa_auditdescription { get; set; }
+    }
+
     public class temp_dfa_appapplicationstart_params
     {
         public int? dfa_doyourlossestotalmorethan10002 { get; set; } // optional boolean  TODO: move to dfa_applicationstart_params
@@ -177,6 +193,59 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         public string? dfa_eventid { get; set; }
         public string? dfa_name { get; set; }
         public bool? dfa_portalsubmitted { get; set; }
+
+        // 2024-09-16 EMCRI-663 waynezen; new fields from application
+        public string? dfa_applicant { get; set; } // primary contact Guid - only include if  you know it
+        public string? dfa_doingbusinessasdbaname { get; set; }
+        public string? dfa_businessnumber { get; set; }
+        public string? dfa_businessnumberverifiedflag { get; set; }
+        public string? dfa_incorporationnumber { get; set; }
+        public string? dfa_jurisdictionofincorporation { get; set; }
+        public string? dfa_statementofregistrationnumber { get; set; }
+        public string? dfa_bceidbusinessguid { get; set; }
+
+        public string dfa_businessmailingaddressline1 { get; set; }
+        public string dfa_businessmailingaddressline2 { get; set; }
+        public string dfa_businessmailingaddresscitytext { get; set; }
+        public string dfa_businessmailingaddressprovince { get; set; }
+        public string dfa_businessmailingaddresspostalcode { get; set; }
+        public int? dfa_mailingaddresscanadapostverified { get; set; }
+    }
+
+    // 2024-09-17 EMCRI-663 waynezen
+    public class dfa_applicationprimarycontact_params
+    {
+        public string dfa_appcontactid { get; set; } // if present, update existing record
+        public string? dfa_bceiduserguid { get; set; }
+        public string? dfa_bceidbusinessguid { get; set; }
+        public string? dfa_bceiduserlogin { get; set; }
+        public string? dfa_firstname { get; set; }
+        public string? dfa_lastname { get; set; }
+        public string? dfa_department { get; set; }
+        public string? dfa_businessnumber { get; set; }
+        public string? dfa_emailaddress { get; set; }
+        public string? dfa_cellphonenumber { get; set; }
+        public string? dfa_title { get; set; }
+        public string? dfa_notes { get; set; }
+    }
+
+    // 2024-09-17 EMCRI-663 waynezen
+    public class dfa_applicationprimarycontact_retrieve
+    {
+        public string? dfa_appcontactid { get; set; }
+        public string? dfa_primaryaddressline1 { get; set; }
+        public bool? dfa_mailingaddresscanadapostverified { get; set; }
+        public string? dfa_bceiduserguid { get; set; }
+        public string? dfa_bceidbusinessguid { get; set; }
+        public string? dfa_bceiduserlogin { get; set; }
+        public string? dfa_firstname { get; set; }
+        public string? dfa_lastname { get; set; }
+        public string? dfa_department { get; set; }
+        public string? dfa_businessnumber { get; set; }
+        public string? dfa_emailaddress { get; set; }
+        public string? dfa_cellphonenumber { get; set; }
+        public string? dfa_title { get; set; }
+        public string? dfa_notes { get; set; }
     }
 
     public class temp_dfa_appapplicationmain_params // TODO: move these under dfa_appapplicationmain_params
@@ -221,7 +290,10 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         public string? dfa_eligiblepayable { get; set; }
         public string? dfa_totalpaid { get; set; }
         public string? dfa_claimpaiddate { get; set; }
-        public string? dfa_claimreceiveddate { get; set; }
+        public string? dfa_claimreceivedbyemcrdate { get; set; }
+        public string? dfa_claimtotal { get; set; }
+        public string? dfa_paidclaimamount { get; set; }
+        public string? dfa_onetimedeductionamount { get; set; }
     }
 
     public class dfa_appapplicationmain_retrieve
@@ -287,6 +359,22 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         public string dfa_dfaapplicantsubtypecomments { get; set; }
         public string dfa_applicantothercomments { get; set; }
         public string dfa_governmentbodylegalname { get; set; }
+
+        // 2024-09-16 EMCRI-663 waynezen; new fields from application
+        public string _dfa_applicant_value { get; set; }
+        public string dfa_doingbusinessasdbaname { get; set; }
+        public string dfa_businessnumber { get; set; }
+        public string dfa_businessnumberverifiedflag { get; set; }
+        public string dfa_incorporationnumber { get; set; }
+        public string dfa_jurisdictionofincorporation { get; set; }
+        public string dfa_statementofregistrationnumber { get; set; }
+        public string dfa_bceidbusinessguid { get; set; }
+        public string dfa_businessmailingaddressline1 { get; set; }
+        public string dfa_businessmailingaddressline2 { get; set; }
+        public string dfa_businessmailingaddresscitytext { get; set; }
+        public string dfa_businessmailingaddressprovince { get; set; }
+        public string dfa_businessmailingaddresspostalcode { get; set; }
+        public int? dfa_mailingaddresscanadapostverified { get; set; }
     }
 
     public class dfa_appbuildingownerlandlord
@@ -439,7 +527,15 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         public string fileType { get; set; } // pass in string for fileType (business defined type e.g. damage photo)
         public string? dfa_requireddocumenttype { get; set; } // for required documents TODO: uncomment
     }
-
+    public class SubmissionEntityPDF
+    {
+        public IEnumerable<AttachmentEntity> documentCollection { get; set; }
+        public string dfa_appapplicationid { get; set; }
+        public string dfa_description { get; set; } // pass in description
+        public string dfa_modifiedby { get; set; } // pass in modified by
+        public string fileType { get; set; } // pass in string for fileType (business defined type e.g. damage photo)
+        public string? dfa_requireddocumenttype { get; set; } // for required documents TODO: uncomment
+    }
     public class dfa_DFAActionDeleteDocuments_parms
     {
         public Guid AppDocID { get; set; } // required string

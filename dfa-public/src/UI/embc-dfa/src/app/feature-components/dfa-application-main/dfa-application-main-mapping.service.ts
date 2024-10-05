@@ -21,6 +21,17 @@ export class DFAApplicationMainMappingService {
     this.setApplicationDetails(dfaApplicationMain);
   }
 
+  // EMCRI-663 waynezen TODO: new
+  mapDFAApplicationMainContacts(dfaApplicationMain: DfaApplicationMain): void {
+    this.dfaApplicationMainDataService.setDFAApplicationMain(dfaApplicationMain);
+    this.setExistingDFAApplicationMainContacts(dfaApplicationMain);
+  }
+
+  setExistingDFAApplicationMainContacts(dfaApplicationMain: DfaApplicationMain): void {
+    this.setContactDetails(dfaApplicationMain);
+  }
+
+
   private setApplicationDetails(dfaApplicationMain: DfaApplicationMain): void {
     let formGroup: UntypedFormGroup;
     this.formCreationService
@@ -34,6 +45,25 @@ export class DFAApplicationMainMappingService {
         formGroup = applicationDetails;
       });
     this.dfaApplicationMainDataService.applicationDetails = dfaApplicationMain.applicationDetails;
+    this.dfaApplicationMainDataService.contacts = dfaApplicationMain.applicationContacts;
   }
+
+    // EMCRI-663 waynezen TODO: debug
+    private setContactDetails(dfaApplicationMain: DfaApplicationMain): void {
+      let formGroup: UntypedFormGroup;
+      this.formCreationService
+        .getContactsForm()
+        .pipe(first())
+        .subscribe((contactDetails) => {
+          contactDetails.setValue({
+            ...dfaApplicationMain.applicationContacts,
+            guidanceSupport: dfaApplicationMain.applicationContacts.guidanceSupport === true ? 'true' : (dfaApplicationMain.applicationContacts.guidanceSupport === false ? 'false' : null),
+          });
+          formGroup = contactDetails;
+        });
+      this.dfaApplicationMainDataService.applicationDetails = dfaApplicationMain.applicationDetails;
+      this.dfaApplicationMainDataService.contacts = dfaApplicationMain.applicationContacts;
+    }
+  
 
 }

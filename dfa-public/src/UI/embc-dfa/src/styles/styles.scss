@@ -213,12 +213,17 @@ button {
 button:focus {
   outline: 0px !important;
 }
-
+@media (min-width: 1400px) {
+  .container {
+       max-width: 1700px !important;
+   }
+}
 @media screen and (max-width: 768px) {
   .resp-style .button-p {
     width: 100% !important;
     float: none;
   }
+
 
   .resp-style .button-s {
     margin-bottom: 10px;

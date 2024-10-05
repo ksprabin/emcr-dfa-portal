@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using HandlebarsDotNet;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using pdfservice.Models;
 using pdfservice.Utils;
 using Stubble.Core.Builders;
@@ -142,15 +144,19 @@ namespace pdfservice.Controllers
             return new NotFoundResult();
         }
         [HttpPost]
-        [Route("GetPDF/{template}")]
+        [Route("GetPDF")]
         [Produces("application/pdf")]
         [ProducesResponseType(200, Type = typeof(FileContentResult))]
-        public IActionResult GetPDF([FromBody] PdfApplicationData pdfApplicationData, string template)
+        public IActionResult GetPDF([FromBody] PdfReuest pdfReuest)
         {
+            if (pdfReuest==null||string.IsNullOrEmpty(pdfReuest.Template)|| pdfReuest.PdfApplicationData==null)
+            {
+                throw new BadHttpRequestException("pdfReuest,Template or PdfApplicationData can be null");
+            }
             _logger.LogInformation($"PDF-Service GetPDF: received request");
 
             //template = "dfa_application_demo";
-            string filename = $"Templates/{template}.mustache";
+            string filename = $"Templates/{pdfReuest.Template}.mustache";
 
             _logger.LogInformation($"PDF-Service GetPDF: template filename is: {filename}");
 
@@ -159,9 +165,11 @@ namespace pdfservice.Controllers
 
             contactText.Append($@"<tr style='background-color: #415a88;color: #fff;'>
                          <th>First Name</th><th>Last Name</th><th>Business Phone</th><th>Email</th><th>Cell Phone</th><th>Job Title</th><th>Notes</th></tr>");
-            foreach (var contact in pdfApplicationData.Contacts)
+            if (pdfReuest.PdfApplicationData.Contacts!=null && pdfReuest.PdfApplicationData.Contacts.Count>0)
             {
-                contactText.Append($@"<tr>
+                foreach (var contact in pdfReuest.PdfApplicationData.Contacts)
+                {
+                    contactText.Append($@"<tr>
                         <td>{contact.FirstName}</td>
                         <td>{contact.LastName}</td>
                         <td>{contact.BusinessPhone}</td>   
@@ -170,17 +178,18 @@ namespace pdfservice.Controllers
                         <td>{contact.JobTitle}</td>
                         <td>{contact.Notes}</td>
                         </tr>");
+                }
             }
 
             contactText.Append("</table></div>");
-            pdfApplicationData.ContactsText = contactText.ToString();
+            pdfReuest.PdfApplicationData.ContactsText = contactText.ToString();
             if (System.IO.File.Exists(filename))
             {
                 string format = System.IO.File.ReadAllText(filename);
                 HandlebarsTemplate<object, object> handlebar = GetHandlebarsTemplate(format);
 
                 handlebar = Handlebars.Compile(format);
-                var html = handlebar(pdfApplicationData);
+                var html = handlebar(pdfReuest.PdfApplicationData);
 
                 var doc = new HtmlToPdfDocument()
                 {
@@ -200,12 +209,12 @@ namespace pdfservice.Controllers
                 try
                 {
                     var pdf = _generatePdf.Convert(doc);
-                    return File(pdf, "application/pdf",$"{pdfApplicationData.LastName},{pdfApplicationData.FirstName}_application_summary.pdf");
+                    return File(pdf, "application/pdf",$"{pdfReuest.PdfApplicationData.LastName},{pdfReuest.PdfApplicationData.FirstName}_application_summary.pdf");
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e, "ERROR rendering PDF");
-                    _logger.LogError(template);
+                    _logger.LogError(pdfReuest.Template);
                     _logger.LogError(html);
                 }
                 return Content(html, "text/html", Encoding.UTF8);

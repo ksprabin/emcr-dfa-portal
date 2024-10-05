@@ -28,6 +28,11 @@ export class BCeIdLookupService extends BaseService {
   static readonly BCeIdLookupGetBCeIdSelfInfoPath = '/api/bceid/self';
 
   /**
+   * Lookup your own BCeID Business Account, using logged in credentials
+   * NOTE to API clients: remember to check "isValidResponse".
+   *
+   *
+   *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `bCeIdLookupGetBCeIdSelfInfo()` instead.
    *
@@ -52,6 +57,11 @@ export class BCeIdLookupService extends BaseService {
   }
 
   /**
+   * Lookup your own BCeID Business Account, using logged in credentials
+   * NOTE to API clients: remember to check "isValidResponse".
+   *
+   *
+   *
    * This method provides access to only to the response body.
    * To access the full response (for headers, for example), `bCeIdLookupGetBCeIdSelfInfo$Response()` instead.
    *
@@ -71,12 +81,21 @@ export class BCeIdLookupService extends BaseService {
   static readonly BCeIdLookupGetBCeIdOtherInfoPath = '/api/bceid/other';
 
   /**
+   * Lookup a different BCeID Business Account
+   * NOTE to API clients: remember to check "isValidResponse".
+   *
+   *
+   *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
    * To access only the response body, use `bCeIdLookupGetBCeIdOtherInfo()` instead.
    *
    * This method doesn't expect any request body.
    */
   bCeIdLookupGetBCeIdOtherInfo$Response(params?: {
+
+    /**
+     * The other Business BCeID user to search for
+     */
     userId?: string;
   }): Observable<StrictHttpResponse<BCeIdBusiness>> {
 
@@ -97,12 +116,21 @@ export class BCeIdLookupService extends BaseService {
   }
 
   /**
+   * Lookup a different BCeID Business Account
+   * NOTE to API clients: remember to check "isValidResponse".
+   *
+   *
+   *
    * This method provides access to only to the response body.
    * To access the full response (for headers, for example), `bCeIdLookupGetBCeIdOtherInfo$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
   bCeIdLookupGetBCeIdOtherInfo(params?: {
+
+    /**
+     * The other Business BCeID user to search for
+     */
     userId?: string;
   }): Observable<BCeIdBusiness> {
 

@@ -8,5 +8,6 @@ export enum FileCategory {
   PreEvent = 'Pre Event Condition',
   PostEvent = 'Post Event Condition',
   Reports = 'Reports',
-  AdditionalDocuments = 'Additional Supporting Documents'
+  AdditionalDocuments = 'Additional Supporting Documents',
+  AppplicationPDF = 'Appplication PDF'
 }

@@ -12,8 +12,11 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AutoMapper;
 using EMBC.DFA.API.ConfigurationModule.Models.Dynamics;
+using EMBC.DFA.API.ConfigurationModule.Models.PDF;
+using EMBC.DFA.API.ConfigurationModule.Models.PDF.PDFService;
 using EMBC.DFA.API.Services;
 using Google.Protobuf.WellKnownTypes;
+using HandlebarsDotNet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,17 +34,20 @@ namespace EMBC.DFA.API.Controllers
         private readonly IConfigurationHandler handler;
         // 2024-08-11 EMCRI-595 waynezen; BCeID Authentication
         private readonly IUserService userService;
+        private readonly PDFServiceHandler pDFServiceHandler;
 
         public ApplicationController(
             IHostEnvironment env,
             IMapper mapper,
             IConfigurationHandler handler,
-            IUserService userService)
+            IUserService userService,
+            PDFServiceHandler pDFServiceHandler)
         {
             this.env = env;
             this.mapper = mapper;
             this.handler = handler;
             this.userService = userService ?? throw new ArgumentNullException(nameof(userService));
+            this.pDFServiceHandler = pDFServiceHandler;
         }
 
         private string currentUserId => userService.GetBCeIDBusinessId();
@@ -116,12 +122,37 @@ namespace EMBC.DFA.API.Controllers
 
             if (application == null) return BadRequest("Application details cannot be empty.");
 
-            //var dfa_appcontact = await handler.HandleGetUser(currentUserId);
-            //currentUserId = "6e0d26eb-376a-ef11-b851-00505683fbf4";
-            //application.ProfileVerification = new ProfileVerification() { profileId = currentUserId };
-            application.ProfileVerification = new ProfileVerification() { profileId = "6e0d26eb-376a-ef11-b851-00505683fbf4" };
+            var userData = userService.GetJWTokenData();
+            if (userData == null) return NotFound();
+
+            // 2024-09-17 EMCRI-663 waynezen; handle Primary Contact
+            var primeContactIn = mapper.Map<dfa_applicationprimarycontact_params>(application.applicationContacts);
+
+            var contactId = primeContactIn?.dfa_appcontactid;
+            if (primeContactIn?.dfa_bceiduserguid != null)
+            {
+                // saving new Application - try to find existing Primary contact using BCeID user guid
+                contactId = await handler.HandlePrimaryContactAsync(primeContactIn);
+
+                // if still no contactId, then error
+                if (contactId == null)
+                {
+                    return BadRequest("Create/update Primary Contact failed");
+                }
+            }
 
             var mappedApplication = mapper.Map<dfa_appapplicationmain_params>(application);
+            mappedApplication.dfa_applicant = contactId;
+
+            // 2024-09-17 EMCRI-676 waynezen; if no Primary Contact yet, use BCeID guid's of logged in user
+            if (mappedApplication?.dfa_bceidbusinessguid == null && primeContactIn?.dfa_bceidbusinessguid == null)
+            {
+                mappedApplication.dfa_bceidbusinessguid = userData.bceid_business_guid.ToString();
+            }
+            else
+            {
+                mappedApplication.dfa_bceidbusinessguid = primeContactIn.dfa_bceidbusinessguid;
+            }
 
             var result = await handler.HandleApplicationUpdate(mappedApplication, null);
 
@@ -142,9 +173,223 @@ namespace EMBC.DFA.API.Controllers
                     var resultContact = await handler.HandleOtherContactAsync(mappedOtherContact);
                 }
             }
+            if (application != null && application.applicationDetails != null && application.applicationDetails.appStatus == ApplicationStageOptionSet.SUBMIT)
+            {
+                PdfReuest pdfReuest = new PdfReuest
+                {
+                    PdfApplicationData = GetPdfApplicationData(application),
+                    Template = "dfa_application_summary"
+                };
 
+                var file = await pDFServiceHandler.GetFileDataAsync(pdfReuest);
+
+                var applicationReviewPDFUpload = BuildApplicationReviewPDFUpload(mappedApplication, file);
+                try
+                {
+                    var mappedFileUpload = mapper.Map<AttachmentEntity>(applicationReviewPDFUpload);
+                    var submissionEntity = mapper.Map<SubmissionEntityPDF>(applicationReviewPDFUpload);
+                    submissionEntity.documentCollection = Enumerable.Empty<AttachmentEntity>();
+                    submissionEntity.documentCollection = submissionEntity.documentCollection.Append<AttachmentEntity>(mappedFileUpload);
+                    var fileUploadResult = await handler.HandleFileUploadApplicationPDFAsync(submissionEntity);
+                }
+                catch (Exception ex)
+                {
+                    return Ok(ex.Message);
+                }
+            }
             return Ok(result);
         }
+
+        private ApplicationReviewPDFUpload BuildApplicationReviewPDFUpload(dfa_appapplicationmain_params mappedApplication, byte[] file)
+        {
+            return new ApplicationReviewPDFUpload
+            {
+                dfa_appapplicationid = Guid.Parse(mappedApplication.dfa_appapplicationid),
+                contentType = "application/pdf",
+                fileData = file,
+                fileType = FileCategory.AppplicationPDF,
+                fileName = $"{mappedApplication.dfa_appapplicationid}.pdf",
+                fileDescription = "Appplication PDF",
+                uploadedDate = DateTime.Now.ToString()
+            };
+        }
+
+        public PdfApplicationData GetPdfApplicationData(DFAApplicationMain application)
+        {
+            var contacts = new Contact[]
+            {
+                    new Contact
+                    {
+                        FirstName = "Karim", LastName = "Hass", CellPhone = "222233", BusinessPhone = "44444444", Email = "Karim@12332.com", JobTitle = "Co-Owner", Notes = "notes"
+                    },
+                    new Contact
+                    {
+                        FirstName = "Karim1", LastName = "Hass1", CellPhone = "2222331", BusinessPhone = "444444441", Email = "Karim@123321.com", JobTitle = "Co-Owner1", Notes = "notes1"
+                    }
+            };
+            var contactText = new StringBuilder();
+            contactText.Append($@"<div class='contacts-container' ><table class='contacts' style='width:95%'>");
+
+            contactText.Append($@"<tr style='background-color: #415a88;color: #fff;'>
+                         <th>First Name</th><th>Last Name</th><th>Business Phone</th><th>Email</th><th>Cell Phone</th><th>Job Title</th><th>Notes</th></tr>");
+            foreach (var contact in contacts)
+            {
+                contactText.Append($@"<tr>
+                        <td>{contact.FirstName}</td>
+                        <td>{contact.LastName}</td>
+                        <td>{contact.BusinessPhone}</td>   
+                        <td>{contact.Email}</td>
+                        <td>{contact.CellPhone}</td>
+                        <td>{contact.JobTitle}</td>
+                        <td>{contact.Notes}</td>
+                        </tr>");
+            }
+
+            contactText.Append("</table></div>");
+
+            var pdfApplicationData = new PdfApplicationData
+            {
+                IndigenousGoverningBody = "SmallBusinessOwner",
+                DateofDamageFrom = "DateofDamageTo",
+                DateofDamageTo = "DateofDamageTo",
+                DisasterEvent = "DisasterEvent",
+                CauseofDamage = "CauseofDamage ",
+                GovernmentType = "GovernmentType",
+                OtherGoverningBody = "OtherGoverningBody",
+                DescribeYourOrganization = "DescribeYourOrganization",
+
+                //////////// Second section////////////
+                DoingBusinessAsDBAName = "DoingBusinessAsDBAName",
+                BusinessNumber = "BusinessNumber",
+                AddressLine1 = "AddressLine1",
+                AddressLine2 = "AddressLine2",
+                City = "City",
+                Province = "Province",
+                PostalCode = "PostalCode",
+
+                //Primary Contact Details
+                FirstName = "FirstName",
+                LastName = "LastName",
+                Department = "Department",
+                BusinessPhone = "BusinessPhone",
+                EmailAddress = "EmailAddress",
+                CellPhone = "CellPhone",
+                JobTitle = "JobTitle",
+                // ContactNotes = "ContactNotes",
+
+                //Contacts
+                ContactsText = contactText.ToString(),
+            };
+            return pdfApplicationData;
+            //if (System.IO.File.Exists(filename))
+            //{
+            //    string format = System.IO.File.ReadAllText(filename);
+            //    HandlebarsTemplate<object, object> handlebar = GetHandlebarsTemplate(format);
+
+            //    handlebar = Handlebars.Compile(format);
+            //    var html = handlebar(rawdata);
+
+            //    var doc = new HtmlToPdfDocument()
+            //    {
+            //        GlobalSettings = {
+            //            PaperSize = PaperKind.Letter,
+            //            Orientation = Orientation.Portrait,
+            //            Margins = new MarginSettings(5.0,5.0,5.0,5.0)
+            //        },
+
+            //        Objects = {
+            //            new ObjectSettings()
+            //            {
+            //                HtmlContent = html
+            //            }
+            //        }
+            //    };
+            //    try
+            //    {
+            //        var pdf = _generatePdf.Convert(doc);
+            //        string bitString = BitConverter.ToString(pdf);
+
+            //        return File(pdf, "application/pdf", "test.pdf");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        _logger.LogError(e, "ERROR rendering PDF");
+            //        _logger.LogError(template);
+            //        _logger.LogError(html);
+            //    }
+            //    return Content(html, "text/html", Encoding.UTF8);
+            }
+
+        //public PdfApplicationData GetPdfApplicationData()
+        //{
+        //    var contacts = new Contact[]
+        //    {
+        //            new Contact
+        //            {
+        //                FirstName = "Karim", LastName = "Hass", CellPhone = "222233", BusinessPhone = "44444444", Email = "Karim@12332.com", JobTitle = "Co-Owner", Notes = "notes"
+        //            },
+        //            new Contact
+        //            {
+        //                FirstName = "Karim1", LastName = "Hass1", CellPhone = "2222331", BusinessPhone = "444444441", Email = "Karim@123321.com", JobTitle = "Co-Owner1", Notes = "notes1"
+        //            }
+        //    };
+        //    var contactText = new StringBuilder();
+        //    contactText.Append($@"<div class='contacts-container' ><table class='contacts' style='width:95%'>");
+
+        //    contactText.Append($@"<tr style='background-color: #415a88;color: #fff;'>
+        //                 <th>First Name</th><th>Last Name</th><th>Business Phone</th><th>Email</th><th>Cell Phone</th><th>Job Title</th><th>Notes</th></tr>");
+        //    foreach (var contact in contacts)
+        //    {
+        //        contactText.Append($@"<tr>
+        //                <td>{contact.FirstName}</td>
+        //                <td>{contact.LastName}</td>
+        //                <td>{contact.BusinessPhone}</td>
+        //                <td>{contact.Email}</td>
+        //                <td>{contact.CellPhone}</td>
+        //                <td>{contact.JobTitle}</td>
+        //                <td>{contact.Notes}</td>
+        //                </tr>");
+        //    }
+
+        //    contactText.Append("</table></div>");
+
+        //    var pdfApplicationData = new PdfApplicationData
+        //    {
+        //        IndigenousGoverningBody = "SmallBusinessOwner",
+        //        DateofDamageFrom = "DateofDamageTo",
+        //        DateofDamageTo = "DateofDamageTo",
+        //        DisasterEvent = "DisasterEvent",
+        //        CauseofDamage = "CauseofDamage ",
+        //        GovernmentType = "GovernmentType",
+        //        OtherGoverningBody = "OtherGoverningBody",
+        //        DescribeYourOrganization = "DescribeYourOrganization",
+
+        //        //////////// Second section////////////
+        //        DoingBusinessAsDBAName = "DoingBusinessAsDBAName",
+        //        BusinessNumber = "BusinessNumber",
+        //        AddressLine1 = "AddressLine1",
+        //        AddressLine2 = "AddressLine2",
+        //        City = "City",
+        //        Province = "Province",
+        //        PostalCode = "PostalCode",
+
+        //        //Primary Contact Details
+        //        FirstName = "FirstName",
+        //        LastName = "LastName",
+        //        Department = "Department",
+        //        BusinessPhone = "BusinessPhone",
+        //        EmailAddress = "EmailAddress",
+        //        CellPhone = "CellPhone",
+        //        JobTitle = "JobTitle",
+        //        // ContactNotes = "ContactNotes",
+
+        //        //Contacts
+        //        ContactsText = contactText.ToString(),
+        //    };
+        //    return pdfApplicationData;
+        //}
+
+        //return new NotFoundResult();
 
         /// <summary>
         /// Get an application by Id
@@ -193,15 +438,25 @@ namespace EMBC.DFA.API.Controllers
             try
             {
                 // 2024-08-11 EMCRI-595 waynezen; BCeID Authentication
-                var userId = userService.GetBCeIDBusinessId();
-                if (string.IsNullOrEmpty(userId)) return NotFound();
-
-                var appContactProfile = await handler.HandleGetUser(userId);
+                var userData = userService.GetJWTokenData();
+                if (userData == null) return NotFound();
 
                 var dfa_appapplication = await handler.GetApplicationMainAsync(applicationId);
                 DFAApplicationMain dfaApplicationMain = new DFAApplicationMain();
                 dfaApplicationMain.Id = applicationId;
                 dfaApplicationMain.applicationDetails = mapper.Map<ApplicationDetails>(dfa_appapplication);
+
+                // 2024-09-24 EMCRI-663; get primary contact info
+                if (dfa_appapplication?._dfa_applicant_value != null)
+                {
+                    var primeContactIn = await handler.HandleGetPrimaryContactAsync(dfa_appapplication._dfa_applicant_value);
+                    // convert Dynamics DTO to UI DTO
+                    var appContact = mapper.Map<ApplicationContacts>(primeContactIn);
+                    // add in a few extra fields from the Application -> Contacts screen
+                    mapper.Map<dfa_appapplicationmain_retrieve, ApplicationContacts>(dfa_appapplication, appContact);
+
+                    dfaApplicationMain.applicationContacts = appContact;
+                }
 
                 return Ok(dfaApplicationMain);
             }
@@ -223,8 +478,7 @@ namespace EMBC.DFA.API.Controllers
             var userData = userService.GetJWTokenData();
 
             if (userData == null) return NotFound();
-            var profileId = "6e0d26eb-376a-ef11-b851-00505683fbf4"; //userData.bceid_business_guid.ToString(); //"ed762426-1075-ee11-b846-00505683fbf4";
-            var lstApplications = await handler.HandleApplicationList(profileId);
+            var lstApplications = await handler.HandleApplicationList(userData);
             return Ok(lstApplications);
         }
 
@@ -354,6 +608,8 @@ namespace EMBC.DFA.API.Controllers
     {
         public Guid? Id { get; set; }
         public ApplicationDetails? applicationDetails { get; set; }
+        // 2024-09-16 EMCRI-663 waynezen; new fields from application
+        public ApplicationContacts applicationContacts { get; set; }
         public ProfileVerification? ProfileVerification { get; set; }
         public OtherContact[]? OtherContact { get; set; }
         public bool deleteFlag { get; set; }

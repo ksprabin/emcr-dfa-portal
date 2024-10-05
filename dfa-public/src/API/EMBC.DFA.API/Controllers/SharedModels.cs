@@ -223,7 +223,10 @@ namespace EMBC.DFA.API.Controllers
         Reports,
 
         [EnumMember(Value = "Additional Supporting Documents")]
-        AdditionalDocuments
+        AdditionalDocuments,
+
+        [EnumMember(Value = "Appplication PDF")]
+        AppplicationPDF
     }
 
     /// <summary>
@@ -465,6 +468,41 @@ namespace EMBC.DFA.API.Controllers
         public string? eventId { get; set; }
         public ApplicationStageOptionSet? appStatus { get; set; }
     }
+
+    // 2024-09-16 EMCRI-663 waynezen
+    public class ApplicationContacts
+    {
+        public Guid? contactId { get; set; }
+        public string? legalName { get; set; }
+        public string? doingBusinessAs { get; set; }
+        public string? businessNumber { get; set; }
+
+        public string? addressLine1 { get; set; }
+        public string? addressLine2 { get; set; }
+        public string? community { get; set; }
+        public string? city { get; set; }
+        public string? postalCode { get; set; }
+        public string? stateProvince { get; set; }
+        public string? isDamagedAddressVerified { get; set; }
+
+        // Primary Contact info
+
+        public string? primaryContactSearch { get; set; }
+        public bool? primaryContactValidated { get; set; }
+
+        public bool? guidanceSupport { get; set; }
+
+        public string? pcFirstName { get; set; }
+        public string? pcLastName { get; set; }
+        public string? pcDepartment { get; set; }
+        public string? pcBusinessPhone { get; set; }
+        public string? pcEmailAddress { get; set; }
+        public string? pcCellPhone { get; set; }
+        public string? pcJobTitle { get; set; }
+        public string? pcNotes { get; set; }
+        public string? pcBCeIDOrgGuid { get; set; }
+        public string? pcBCeIDuserGuid { get; set; }
+}
 
     /// <summary>
     /// Clean Up Log

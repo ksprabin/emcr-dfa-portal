@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 //import { FormCreationService } from '../core/services/formCreation.service';
 import { LoginService } from '../core/services/login.service';
 import { LoginResponse } from 'angular-auth-oidc-client';
-import { first, last } from 'rxjs';
+import { first, last, tap } from 'rxjs';
+import { ContactService } from 'src/app/core/api/services';
 
 @Component({
   selector: 'app-login-page',
@@ -16,6 +17,7 @@ export class LoginPageComponent implements OnInit {
     private router: Router,
 //  private formCreationService: FormCreationService,
     private loginService: LoginService,
+    private contactService: ContactService,
   ) {
 
     // console.debug('[DFA] login-page constructor');
@@ -33,6 +35,13 @@ export class LoginPageComponent implements OnInit {
         // console.debug('[DFA] login-page isAuthenticated123: ' + response?.isAuthenticated);
         if (response?.isAuthenticated)
           {
+            // 2024-09-23 EMCRI-663 waynezen: audit event for when a user successfully logs in - example only
+            this.contactService.contactCreateAuditEvent({eventMoniker: 'logged in'})
+            .pipe(tap())
+            .subscribe((response: String) => {
+              // console.debug('[DFA] created audit event?');
+            });
+                  
             this.router.navigate(['/dfa-dashboard']);
           }
           else
@@ -40,6 +49,7 @@ export class LoginPageComponent implements OnInit {
             this.router.navigate(['/']);
           }
     });
+
   } 
 
   verifyUser(): void {

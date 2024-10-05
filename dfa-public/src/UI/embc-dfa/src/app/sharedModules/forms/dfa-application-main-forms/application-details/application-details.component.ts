@@ -339,10 +339,6 @@ export default class PropertyDamageComponent implements OnInit, OnDestroy {
 
     let countMatchingEvents = this.matchingEventsData.length;
     if (countMatchingEvents <= 0) {
-      this.applicationDetailsForm.controls.eventId.setValue(null);
-      this.applicationDetailsForm.controls.eventName.setValue(null);
-      this.applicationDetailsForm.updateValueAndValidity();
-
       this.dialog
         .open(DFAEligibilityDialogComponent, {
           data: {
@@ -487,7 +483,6 @@ export default class PropertyDamageComponent implements OnInit, OnDestroy {
     if (form.controls.stormDamage.value !== true &&
       form.controls.landslideDamage.value !== true &&
       form.controls.otherDamage.value !== true &&
-      form.controls.wildfireDamage.value !== true &&
       form.controls.floodDamage.value !== true) {
       return { noCauseOfDamage: true };
     }

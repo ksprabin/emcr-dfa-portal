@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using EMBC.DFA.API.ConfigurationModule.Models.AuthModels;
 using Google.Protobuf.WellKnownTypes;
 using Xrm.Tools.WebAPI.Requests;
 
@@ -31,10 +32,12 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         Task<IEnumerable<dfa_appcleanuplogs_retrieve>> GetCleanUpLogItemsListAsync(Guid applicationId);
         Task<string> InsertDocumentLocationAsync(SubmissionEntity submission);
         Task<string> InsertDocumentLocationClaimAsync(SubmissionEntityClaim submission);
+        Task<string> InsertDocumentLocationApplicationPDFAsync(SubmissionEntityPDF submission);
         Task<string> DeleteDocumentLocationAsync(dfa_DFAActionDeleteDocuments_parms dfa_DFAActionDeleteDocuments_parms);
         Task<IEnumerable<dfa_projectdocumentlocation>> GetProjectDocumentLocationsListAsync(Guid projectId);
         Task<IEnumerable<dfa_projectclaimdocumentlocation>> GetProjectClaimDocumentLocationsListAsync(Guid claimId);
-        Task<IEnumerable<dfa_appapplication>> GetApplicationListAsync(string profileId);
+        // 2024-09-19 EMCRI-676 waynezen; filter applications based on BCeID Org
+        Task<IEnumerable<dfa_appapplication>> GetApplicationListAsync(BceidUserData bceidUser);
         Task<int> GetEventCount();
         Task<IEnumerable<dfa_event>> GetOpenPublicEventList();
         Task<IEnumerable<dfa_effectedregioncommunities>> GetEffectedRegionCommunitiesList();
@@ -50,5 +53,11 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
         Task<string> UpsertInvoice(dfa_invoice_params invoice);
         Task<IEnumerable<dfa_recoveryinvoice>> GetInvoiceListAsync(string claimId);
         Task<string> DeleteInvoice(dfa_invoice_delete_params invoice);
+
+        // 2024-09-17 EMCRI-663 waynezen; handle Primary Contact
+        public Task<dfa_applicationprimarycontact_retrieve> GetPrimaryContactbyBCeIDAsync(string bceidUserId);
+        public Task<dfa_applicationprimarycontact_retrieve> GetPrimaryContactbyContactIdAsync(string contactId);
+        public Task<string> UpsertPrimaryContactAsync(dfa_applicationprimarycontact_params contact);
+        public Task<string> CreateBCeIDAuditEvent(dfa_audit_event auditEvent);
     }
 }

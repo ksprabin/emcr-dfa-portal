@@ -10,6 +10,7 @@ import { ApplicantOption, FarmOption, FileCategory, FileUpload, InsuranceOption,
 import { MatTableDataSource } from '@angular/material/table';
 import { DFAApplicationMainDataService } from '../dfa-application-main/dfa-application-main-data.service';
 import { UntypedFormGroup } from '@angular/forms';
+import { ContactDetails } from 'src/app/core/model/profile.model';
 
 @Component({
   selector: 'app-review',
@@ -66,6 +67,10 @@ export class ReviewComponent implements OnInit {
   appTypeInsuranceForm: UntypedFormGroup;
   appTypeInsuranceForm$: Subscription;
   causeOfDamage: string;
+  applicationType: string;
+  hasInsurance: string;
+
+  contacts:ContactDetails[]= [];
 
   constructor(
     private router: Router,
@@ -121,25 +126,29 @@ export class ReviewComponent implements OnInit {
 
     var appForm = this.formCreationService.applicationDetailsForm.value;
     //debugger
-    //if (appForm.controls.floodDamage.value === 'true') {
-    //  this.causeOfDamage = 'Flood Damage, ';
-    //}
-    //if (appForm.controls.landslideDamage.value === 'true') {
-    //  this.causeOfDamage += 'Landslide Damage, ';
-    //}
-    //if (appForm.controls.stormDamage.value === 'true') {
-    //  this.causeOfDamage += 'Storm Damage, ';
-    //}
-    //if (appForm.controls.wildfireDamage.value === 'true') {
-    //  this.causeOfDamage += 'Wildfire Damage, ';
-    //}
-    //if (appForm.controls.otherDamage.value === 'true') {
-    //  this.causeOfDamage += appForm.controls.otherDamage.value + ', ';
-    //}
-
-    //this.causeOfDamage = this.causeOfDamage.slice(0, -1);
-
-    //const _fullTimeOccupantsFormArray = this.formCreationService.applicationDetailsForm.value;
+    if (appForm.controls.floodDamage.value === 'true') {
+     this.causeOfDamage = 'Flood Damage, ';
+    }
+    if (appForm.controls.landslideDamage.value === 'true') {
+     this.causeOfDamage += 'Landslide Damage, ';
+    }
+    if (appForm.controls.stormDamage.value === 'true') {
+     this.causeOfDamage += 'Storm Damage, ';
+    }
+    if (appForm.controls.wildfireDamage.value === 'true') {
+     this.causeOfDamage += 'Wildfire Damage, ';
+    }
+    if (appForm.controls.otherDamage.value === 'true') {
+     this.causeOfDamage += appForm.controls.otherDamage.value + ', ';
+    }
+    if(this.causeOfDamage){
+      this.causeOfDamage = this.causeOfDamage.slice(0, -1);
+    }
+   
+    var contactsForm = this.formCreationService.contactsForm.value;
+    var otherContactsForm = this.formCreationService.otherContactsForm.value;
+   
+    let _fullTimeOccupantsFormArray1 = this.formCreationService.applicationDetailsForm.value;
     appForm.valueChanges
       .pipe(
         mapTo(appForm.getRawValue())

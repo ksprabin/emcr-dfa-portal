@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { CacheService } from 'src/app/core/services/cache.service';
-import { DfaApplicationStart,  } from 'src/app/core/api/models';
+import { DfaApplicationStart, ApplicationContacts } from 'src/app/core/api/models';
 import { DFAApplicationStartDataService } from '../dfa-application-start/dfa-application-start-data.service';
 import { CleanUpLog, DfaApplicationMain, DamagedPropertyAddress, ApplicationDetails, Contacts, SupportingDocuments, SignAndSubmit, FullTimeOccupant, OtherContact, SecondaryApplicant, DamagedRoom, CleanUpLogItem } from 'src/app/core/model/dfa-application-main.model';
 import { ApplicationService, AttachmentService } from 'src/app/core/api/services';
@@ -32,6 +32,9 @@ export class DFAApplicationMainDataService {
   private _business: string;
   public changeViewOrEdit: EventEmitter<string> = new EventEmitter<string>();
   public changeAppId: EventEmitter<string> = new EventEmitter<string>();
+
+  // 2024-10-02 EMCRI-663 waynezen; publish event for Canada Post verified message on BcAddressComponent
+  public canadaPostVerified: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(
     private cacheService: CacheService,
@@ -203,6 +206,7 @@ export class DFAApplicationMainDataService {
     this.changeViewOrEdit.emit(vieworedit);
     this.cacheService.set('vieworedit', vieworedit);
   }
+
   public getViewOrEdit(): string {
     if (this._vieworedit === null || this._vieworedit === undefined) {
       this._vieworedit = this.cacheService.get('vieworedit');
@@ -218,10 +222,21 @@ export class DFAApplicationMainDataService {
     return this._editstep;
   }
 
+  public setCanadaPostVerified(verifiedornot: string) : void {
+
+    this._contacts.isDamagedAddressVerified = verifiedornot;
+    this.canadaPostVerified.emit(verifiedornot);
+  }
+
    public createDFAApplicationMainDTO(): DfaApplicationMain {
+
+    // 2024-09-16 EMCRI-663 waynezen; assign non-homogeneous fields to Contacts form
+    let primaryContact: ApplicationContacts = this._contacts;
+
     return {
       id: this._applicationId,
       applicationDetails: this._applicationDetails,
+      applicationContacts: primaryContact,
       otherContact: this._otherContacts,
       deleteFlag: false
     };

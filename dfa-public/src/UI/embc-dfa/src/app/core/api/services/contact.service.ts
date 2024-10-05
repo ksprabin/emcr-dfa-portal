@@ -9,8 +9,6 @@ import { RequestBuilder } from '../request-builder';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
-import { AppCity } from '../models/app-city';
-import { AppProvince } from '../models/app-province';
 import { BCeIdBusiness } from '../models/b-ce-id-business';
 import { BceidUserData } from '../models/bceid-user-data';
 
@@ -71,7 +69,7 @@ export class ContactService extends BaseService {
   /**
    * Path part for operation contactGetLoginInfo
    */
-  static readonly ContactGetLoginInfoPath = '/api/contacts/login';
+  static readonly ContactGetLoginInfoPath = '/api/contacts/getlogin';
 
   /**
    * If user isn't authenticated, return NULL.
@@ -120,21 +118,32 @@ export class ContactService extends BaseService {
   }
 
   /**
-   * Path part for operation contactGetAppCities
+   * Path part for operation contactCreateAuditEvent
    */
-  static readonly ContactGetAppCitiesPath = '/api/contacts/cities';
+  static readonly ContactCreateAuditEventPath = '/api/contacts/createaudit';
 
   /**
+   * Gets the same BCeID user info as getlogin, but also ensures that a dfa_bceidusers record exists
+   * for the current logged in user.
+   *
+   *
+   *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `contactGetAppCities()` instead.
+   * To access only the response body, use `contactCreateAuditEvent()` instead.
    *
    * This method doesn't expect any request body.
    */
-  contactGetAppCities$Response(params?: {
-  }): Observable<StrictHttpResponse<Array<AppCity>>> {
+  contactCreateAuditEvent$Response(params?: {
 
-    const rb = new RequestBuilder(this.rootUrl, ContactService.ContactGetAppCitiesPath, 'get');
+    /**
+     * Brief description of event type; eg. &quot;login&quot;, or &quot;submit Application&quot;
+     */
+    eventMoniker?: string;
+  }): Observable<StrictHttpResponse<string>> {
+
+    const rb = new RequestBuilder(this.rootUrl, ContactService.ContactCreateAuditEventPath, 'get');
     if (params) {
+      rb.query('eventMoniker', params.eventMoniker, {});
     }
 
     return this.http.request(rb.build({
@@ -143,65 +152,32 @@ export class ContactService extends BaseService {
     })).pipe(
       filter((r: any) => r instanceof HttpResponse),
       map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Array<AppCity>>;
+        return r as StrictHttpResponse<string>;
       })
     );
   }
 
   /**
+   * Gets the same BCeID user info as getlogin, but also ensures that a dfa_bceidusers record exists
+   * for the current logged in user.
+   *
+   *
+   *
    * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `contactGetAppCities$Response()` instead.
+   * To access the full response (for headers, for example), `contactCreateAuditEvent$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  contactGetAppCities(params?: {
-  }): Observable<Array<AppCity>> {
+  contactCreateAuditEvent(params?: {
 
-    return this.contactGetAppCities$Response(params).pipe(
-      map((r: StrictHttpResponse<Array<AppCity>>) => r.body as Array<AppCity>)
-    );
-  }
+    /**
+     * Brief description of event type; eg. &quot;login&quot;, or &quot;submit Application&quot;
+     */
+    eventMoniker?: string;
+  }): Observable<string> {
 
-  /**
-   * Path part for operation contactGetAppProvinces
-   */
-  static readonly ContactGetAppProvincesPath = '/api/contacts/provinces';
-
-  /**
-   * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `contactGetAppProvinces()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  contactGetAppProvinces$Response(params?: {
-  }): Observable<StrictHttpResponse<Array<AppProvince>>> {
-
-    const rb = new RequestBuilder(this.rootUrl, ContactService.ContactGetAppProvincesPath, 'get');
-    if (params) {
-    }
-
-    return this.http.request(rb.build({
-      responseType: 'json',
-      accept: 'application/json'
-    })).pipe(
-      filter((r: any) => r instanceof HttpResponse),
-      map((r: HttpResponse<any>) => {
-        return r as StrictHttpResponse<Array<AppProvince>>;
-      })
-    );
-  }
-
-  /**
-   * This method provides access to only to the response body.
-   * To access the full response (for headers, for example), `contactGetAppProvinces$Response()` instead.
-   *
-   * This method doesn't expect any request body.
-   */
-  contactGetAppProvinces(params?: {
-  }): Observable<Array<AppProvince>> {
-
-    return this.contactGetAppProvinces$Response(params).pipe(
-      map((r: StrictHttpResponse<Array<AppProvince>>) => r.body as Array<AppProvince>)
+    return this.contactCreateAuditEvent$Response(params).pipe(
+      map((r: StrictHttpResponse<string>) => r.body as string)
     );
   }
 

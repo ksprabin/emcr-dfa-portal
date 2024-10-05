@@ -10,6 +10,5 @@ namespace pdfservice.Models
         public string CellPhone { get; set; }
         public string JobTitle { get; set; }
         public string Notes { get; set; }
-
     }
 }

@@ -80,7 +80,8 @@ namespace EMBC.Gov.BCeID
 
             // SOAP request and parameters
             var myparams = new AccountDetailRequest();
-            myparams.userId = userId;
+            // 2024-09-09 EMCRI-663 waynezen; force userId all lower-case
+            myparams.userId = userId.ToLower();
             myparams.accountTypeCode = BCeIDAccountTypeCode.Business;
             myparams.onlineServiceId = webSvcOptions.serviceId;
             myparams.requesterAccountTypeCode = BCeIDAccountTypeCode.Business;
@@ -125,6 +126,11 @@ namespace EMBC.Gov.BCeID
             business.addressPostal = account.business.address.postal.value;
             business.addressCountry = account.business.address.country.value;
             business.userId = account.userId.value;
+
+            // 2024-09-10 EMCRI-663 waynezen; added fields
+            business.department = account.contact.department.value;
+            business.organizationGuid = Guid.Parse(account.business.guid.value.ToString());
+            business.userGuid = Guid.Parse(account.guid.value.ToString());
 
             return business;
         }
