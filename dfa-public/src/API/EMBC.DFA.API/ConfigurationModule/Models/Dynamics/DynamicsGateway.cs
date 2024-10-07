@@ -1029,7 +1029,7 @@ namespace EMBC.DFA.API.ConfigurationModule.Models.Dynamics
                                    dfa_sitelocation = objApp.dfa_sitelocation,
                                    dfa_estimatedcompletiondateofproject = objApp.dfa_estimatedcompletiondateofproject,
                                    //dfa_event = objAppEvent != null ? objAppEvent.dfa_eventname : null,
-                                   dfa_approvedcost = objApp.dfa_approvedcost.HasValue ? Math.Round(objApp.dfa_approvedcost.Value, 2) : objApp.dfa_approvedcost.Value,
+                                   dfa_approvedcost = objApp.dfa_approvedcost.HasValue ? Math.Round(objApp.dfa_approvedcost.Value, 2) : objApp.dfa_approvedcost,
                                    dfa_18monthdeadline = objApp.dfa_18monthdeadline,
                                    createdon = objApp.createdon,
                                    statuscode = objApp.statuscode,
